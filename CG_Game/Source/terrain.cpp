@@ -69,6 +69,8 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 		}
 	}
 
+	position = Vertices[0].Pos;
+
 	// Indices
 	indicesCount = (imgWidth * imgHeight) * 6;
 	unsigned int *Indices = new unsigned int[indicesCount];
@@ -88,7 +90,7 @@ bool Terrain::load(const char* HeightMap, const char* DetailMap1, const char* De
 			}
 		}
 	}
-	
+
 	// Calc normals
 	for (int x = 0; x < imgWidth; x++) {
 		for (int y = 0; y < imgHeight; y++) {
@@ -587,6 +589,11 @@ void Terrain::draw() {
 	// we draw our terrain
 	
 	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+	
+	
+	glColor3d(1.0, 0.0, 0.0);
+	glRasterPos2d(500, 500);
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 46);
 	/*
 	// disable states in reverse order
 	glDisable(GL_TEXTURE_2D);

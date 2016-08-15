@@ -10,15 +10,10 @@
 #define terrain_h
 
 #include <iostream>
-#ifdef WIN32
-	#include <windows.h>
-	#include <GL/glew.h>
-	#include <GL/GLUT.h>
-	#include <GL/GL.h>
-#else
-	#include <OpenGL/OpenGL.h>
-	#include <GLUT/GLUT.h>
-#endif
+#include <windows.h>
+#include <GL/glew.h>
+#include <GL/GLUT.h>
+#include <GL/GL.h>
 
 #include "GameObject.h"
 #include "vector.h"
@@ -41,6 +36,7 @@ public:
 	bool create(const char* HeightMap, const char* DetailMap1, const char* DetailMap2, const char* MixMap, float Width, float Depth, float HeightMultiplier, float OffsetX, float OffsetY);
 	void draw();
 protected:
+	Vector position;
 	Texture m_HeightMap;
 	Texture m_GrassTex;
 	Texture m_SandTex;

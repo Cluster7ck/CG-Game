@@ -34,7 +34,7 @@ ShaderProgram GameObject::getShaderProgram() {
 
 void GameObject::drawBoundingBox() {
 	glBegin(GL_LINES);
-	glColor3f(1, 1, 0);		//rgb(60%,20%,60%) = violette
+	glColor3f(0, 0, 1);		//rgb(60%,20%,60%) = violette
 
 	//Back side
 	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Min.Y, m_BoundingBox.Min.Z);

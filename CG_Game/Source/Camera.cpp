@@ -8,15 +8,10 @@
 
 #include "../Header/Camera.h"
 
-#ifdef WIN32
-	#include <windows.h>
-	#include <GL/glew.h>
-	#include <GL/GLUT.h>
-	#include <GL/GL.h>
-#else
-	#include <OpenGL/OpenGL.h>
-	#include <GLUT/GLUT.h>
-#endif
+#include <windows.h>
+#include <GL/glew.h>
+#include <GL/GLUT.h>
+#include <GL/GL.h>
 
 #include <math.h>
 
