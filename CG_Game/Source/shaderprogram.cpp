@@ -26,7 +26,7 @@ bool ShaderProgram::load(const char* VertexShader, const char* FragmentShader) {
 		return false;
 	}
 
-    return true;
+	return true;
 }
 
 bool ShaderProgram::loadVertexShader(const char* VertexShader) {
@@ -58,8 +58,8 @@ bool ShaderProgram::compile(std::string* CompileErrors) {
 	GLint result = GL_FALSE;
 	int logLength;
 
-	GLuint program = glCreateProgram();
-
+	std::cout << "Linking program..." << std::endl;
+	m_ShaderProgram = glCreateProgram();
 	// Compile vertex shader
 	if (!m_VertexShaderString.empty()) {
 		std::cout << "Compiling vertex shader..." << std::endl;
@@ -79,7 +79,7 @@ bool ShaderProgram::compile(std::string* CompileErrors) {
 			}
 			return false;
 		}
-		glAttachShader(program, m_VertexShader);
+		glAttachShader(m_ShaderProgram, m_VertexShader);
 		std::cout << "...complete." << std::endl;
 	}
 
@@ -102,22 +102,21 @@ bool ShaderProgram::compile(std::string* CompileErrors) {
 			}
 			return false;
 		}
-		glAttachShader(program, m_FragmentShader);
+		glAttachShader(m_ShaderProgram, m_FragmentShader);
 		std::cout << "...complete." << std::endl;
 	}
 
-	std::cout << "Linking program..." << std::endl;
-	glLinkProgram(program);
+	glLinkProgram(m_ShaderProgram);
 
-	glGetProgramiv(program, GL_LINK_STATUS, &result);
-	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+	glGetProgramiv(m_ShaderProgram, GL_LINK_STATUS, &result);
+	glGetProgramiv(m_ShaderProgram, GL_INFO_LOG_LENGTH, &logLength);
 	if (result == GL_FALSE) {
 		// Lässt sich das Programm nicht verknüpfen
 		std::cout << "...failed." << std::endl;
 		if (CompileErrors != NULL) {
 			// Fehlermeldungen des Compilers in CompileErrors schreiben
 			std::vector<char> programError((logLength > 1) ? logLength : 1);
-			glGetProgramInfoLog(program, logLength, NULL, &programError[0]);
+			glGetProgramInfoLog(m_ShaderProgram, logLength, NULL, &programError[0]);
 			*CompileErrors = std::string(&programError[0]);
 		}
 		return false;

@@ -148,12 +148,14 @@
     <ClInclude Include="Header\Camera.h" />
     <ClInclude Include="Header\color.h" />
     <ClInclude Include="Header\GameObject.h" />
+    <ClInclude Include="Header\GLError.h" />
     <ClInclude Include="Header\Matrix.h" />
     <ClInclude Include="Header\PerlinNoise.h" />
     <ClInclude Include="Header\PlaneModel.h" />
     <ClInclude Include="Header\rgbimage.h" />
     <ClInclude Include="Header\shaderprogram.h" />
-    <ClInclude Include="Header\terrain.h" />
+    <ClInclude Include="Header\Terrain.h" />
+    <ClInclude Include="Header\TerrainChunk.h" />
     <ClInclude Include="Header\Texture.h" />
     <ClInclude Include="Header\vector.h" />
   </ItemGroup>
@@ -161,13 +163,15 @@
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\color.cpp" />
     <ClCompile Include="Source\GameObject.cpp" />
+    <ClCompile Include="Source\GLError.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Matrix.cpp" />
     <ClCompile Include="Source\PerlinNoise.cpp" />
     <ClCompile Include="Source\PlaneModel.cpp" />
     <ClCompile Include="Source\rgbimage.cpp" />
     <ClCompile Include="Source\shaderprogram.cpp" />
-    <ClCompile Include="Source\terrain.cpp" />
+    <ClCompile Include="Source\Terrain.cpp" />
+    <ClCompile Include="Source\TerrainChunk.cpp" />
     <ClCompile Include="Source\Texture.cpp" />
     <ClCompile Include="Source\vector.cpp" />
   </ItemGroup>

@@ -78,3 +78,28 @@ void GameObject::drawBoundingBox() {
 
 	glEnd();
 }
+
+void GameObject::loadShaders(const char* VertexShader, const char* FragmentShader) {
+	std::string compileErrors;
+	if (FragmentShader == NULL && VertexShader != NULL) {
+		m_ShaderProgram.loadVertexShader(VertexShader);
+		m_ShaderProgram.compile(&compileErrors);
+
+	}
+	else if (FragmentShader != NULL && VertexShader == NULL) {
+		m_ShaderProgram.loadFragmentShader(FragmentShader);
+		m_ShaderProgram.compile(&compileErrors);
+	}
+	else if (VertexShader != NULL && FragmentShader != NULL) {
+		m_ShaderProgram.load(VertexShader, FragmentShader);
+		m_ShaderProgram.compile(&compileErrors);
+	}
+	std::cout << compileErrors << std::endl;
+}
+/*
+void GameObject::drawWithShader(bool UseVertexSahder, bool UseFragmentShader) {
+	m_ShaderProgram.activate();
+	draw();
+	m_ShaderProgram.deactivate();
+}
+*/

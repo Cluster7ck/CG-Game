@@ -29,21 +29,13 @@ const unsigned int g_WindowHeight=768;
 const Vector g_LightPos = Vector( 0,64,0);
 
 //Terrain
-struct TerrainChunks {
-	Terrain terrainChunks[CHUNKS_COUNT];
-	float minHeight;
-	float maxHeight;	
-	TerrainChunks() :  minHeight(FLT_MAX), maxHeight(FLT_MIN) {}
-};
-TerrainChunks tChunks;
-
+Terrain terrain(CHUNKS_COUNT);
 Camera g_Camera;
 
 int g_MouseButton = 0;
 int g_MouseState = 0;
 
 void SetupDefaultGLSettings();
-void SetupTerrain();
 void DrawScene();
 void MouseCallback(int Button, int State, int x, int y);
 void MouseMoveCallback(int x, int y);
@@ -66,36 +58,11 @@ int main(int argc, char * argv[]) {
     glutKeyboardFunc(KeyboardCallback);
     glutMotionFunc(MouseMoveCallback);
 
-	SetupTerrain();
+	terrain.initChunks();
 
     glutMainLoop();
 }
 
-void SetupTerrain() {
-	/*Create Terrain Chunks*/
-	int chunksPerSide = sqrt(CHUNKS_COUNT);
-	int maxOffset = (chunksPerSide / 2);
-
-	for (int y = 0; y < chunksPerSide; y++) {
-		for (int x = 0; x < chunksPerSide; x++) {
-
-			tChunks.terrainChunks[x + y*chunksPerSide] = *(new Terrain());
-
-			int offsetX = (x % chunksPerSide) - maxOffset;
-			int offsetY = (chunksPerSide - 1 - y % chunksPerSide) - maxOffset;
-			tChunks.terrainChunks[x + y*chunksPerSide].create("Ressourcen/heightmap.bmp", "Ressourcen/grass.bmp", "Ressourcen/sand.bmp", "Ressourcen/mixmap.bmp", 60, 60, 7, offsetX, offsetY);
-		}
-	}
-	for (int i = 0; i < CHUNKS_COUNT; i++) {
-		if (tChunks.terrainChunks[i].getBoundingBox().Min.Y < tChunks.minHeight)
-			tChunks.minHeight = tChunks.terrainChunks[i].getBoundingBox().Min.Y;
-		if (tChunks.terrainChunks[i].getBoundingBox().Max.Y > tChunks.maxHeight)
-			tChunks.maxHeight = tChunks.terrainChunks[i].getBoundingBox().Max.Y;
-	}
-
-	std::cout << "\nTerrain Min Height: " << tChunks.minHeight << std::endl;
-	std::cout << "\nTerrain Max Height: " << tChunks.maxHeight << std::endl;
-}
 
 void SetupDefaultGLSettings() {
     glClearColor(0, 0, 0, 255);
@@ -180,8 +147,9 @@ void DrawScene() {
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 
 	for (int i = 0; i < CHUNKS_COUNT; i++) {
-		tChunks.terrainChunks[i].draw();
-		tChunks.terrainChunks[i].drawBoundingBox();
+		//tChunks.terrainChunks[i].draw();
+		terrain.chunks[i].drawTest();
+		terrain.chunks[i].drawBoundingBox();;
 	}
 
     glutSwapBuffers();

@@ -36,6 +36,8 @@ public:
 	void drawBoundingBox();
 	BoundingBox getBoundingBox();
 	ShaderProgram getShaderProgram();
+	void loadShaders(const char* VertexShader, const char* FragmentShader);
+	//void drawWithShader(bool UseVertexSahder, bool UseFragmentShader);
 protected:
 	ShaderProgram m_ShaderProgram;
 	BoundingBox m_BoundingBox;
