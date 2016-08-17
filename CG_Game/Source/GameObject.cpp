@@ -33,8 +33,9 @@ ShaderProgram GameObject::getShaderProgram() {
 }
 
 void GameObject::drawBoundingBox() {
+	glDisable(GL_LIGHTING);
 	glBegin(GL_LINES);
-	glColor3f(0, 0, 1);		//rgb(60%,20%,60%) = violette
+	glColor3f(1, 0, 0);		//rgb(60%,20%,60%) = violette
 
 	//Back side
 	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Min.Y, m_BoundingBox.Min.Z);
@@ -77,6 +78,7 @@ void GameObject::drawBoundingBox() {
 	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Max.Y, m_BoundingBox.Max.Z);
 
 	glEnd();
+	glEnable(GL_LIGHTING);
 }
 
 void GameObject::loadShaders(const char* VertexShader, const char* FragmentShader) {

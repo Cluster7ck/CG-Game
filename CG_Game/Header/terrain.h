@@ -8,6 +8,7 @@ public:
 	Terrain(int chunkCount) : minHeight(), maxHeight(), chunkCount(chunkCount) {};
 	~Terrain();
 	void initChunks();
+	void draw();
 	TerrainChunk* chunks;
 private:
 	

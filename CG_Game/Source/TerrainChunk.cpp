@@ -11,7 +11,7 @@
 #define CHUNKSIZE 60
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 Vector triangleNormal(Vector a, Vector b, Vector c);
-
+float map(float s, float a1, float a2, float b1, float b2);
 TerrainChunk::TerrainChunk() {
 }
 
@@ -289,6 +289,9 @@ bool TerrainChunk::create(const char* HeightMap, const char* DetailMap1, const c
 			Vertices[currentIndex].Pos.Z = (y / (CHUNKSIZE*1.0f)*Depth - (Depth / 2)) + OffsetY*(Depth-1);
 			//Height from Perlin Noise
 			Vertices[currentIndex].Pos.Y = pn.GetHeight(x + (CHUNKSIZE -1) * OffsetX, y + (CHUNKSIZE -1) * OffsetY) * HeightMultiplier;
+			//std::cout << "PN Height: " << pn.GetHeight(x + (CHUNKSIZE - 1) * OffsetX, y + (CHUNKSIZE - 1) * OffsetY) * HeightMultiplier << std::endl;
+			//std::cout << "Remapped: " << map(pn.GetHeight(x + (CHUNKSIZE - 1) * OffsetX, y + (CHUNKSIZE - 1) * OffsetY) * HeightMultiplier, -5.88486f, 5.47452f, 0, 1) << std::endl;
+			
 			Vertices[currentIndex].Normal = Vector();
 			//Für Mixmap
 			Vertices[currentIndex].u0 = x / (CHUNKSIZE * 1.0f);
@@ -602,10 +605,11 @@ void TerrainChunk::draw() {
 }
 
 void TerrainChunk::drawTest() {
-	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
-	check_gl_error();
+	#ifdef GL_DEBUG
+		check_gl_error();
+	#endif // DEBUG
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -616,9 +620,13 @@ void TerrainChunk::drawTest() {
 	glNormalPointer(GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(12));
 	
 	m_ShaderProgram.activate();
-	check_gl_error();
+	setShaderUniforms(Vector(0, 64, 0), Color(1, 1, 1), Color(1.0, 1.0, 1.0), Color(0.6, 0, 0), Color(0.2, 0.2, 0.2), 1, 5.478, -5.9f);
+	
+	#ifdef GL_DEBUG
+		check_gl_error();
+	#endif // DEBUG
 	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
-	//glDrawArrays(GL_TRIANGLES, 0, indicesCount);
+
 	m_ShaderProgram.deactivate();
 	
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -626,7 +634,7 @@ void TerrainChunk::drawTest() {
 
 }
 
-void TerrainChunk::setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp) {
+void TerrainChunk::setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp, float MaxHeight, float MinHeight) {
 	GLint paraID = m_ShaderProgram.getParameterID("LightPos");
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("LightPos"), LightPos);
 	//paraID = m_ShaderProgram.getParameterID("litColor");
@@ -639,10 +647,19 @@ void TerrainChunk::setShaderUniforms(Vector LightPos, Color LightColor, Color Di
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("AmbientColor"), AmbientColor);
 	paraID = m_ShaderProgram.getParameterID("SpecExp");
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("SpecExp"), SpecExp);
+	paraID = m_ShaderProgram.getParameterID("MaxHeight");
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("MaxHeight"), MaxHeight);
+	paraID = m_ShaderProgram.getParameterID("MinHeight");
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("MinHeight"), MinHeight);
 }
 
 Vector triangleNormal(Vector a, Vector b, Vector c) {
 	return (b - a).cross(c - a);
+}
+
+float map(float s, float a1, float a2, float b1, float b2)
+{
+	return b1 + (s - a1)*(b2 - b1) / (a2 - a1);
 }
 
 void TerrainChunk::drawWithShader() {

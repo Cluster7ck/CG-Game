@@ -28,6 +28,12 @@ void Terrain::initChunks() {
 	std::cout << "\nTerrain Max Height: " << maxHeight << std::endl;
 }
 
+void Terrain::draw() {
+	for (int i = 0; i < chunkCount; i++) {
+		
+		chunks[i].drawTest();
+	}
+}
 
 Terrain::~Terrain() {
 	delete[] chunks;

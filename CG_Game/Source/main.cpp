@@ -145,12 +145,12 @@ void DrawScene() {
     GLfloat lpos[4];
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
-
+	
+	terrain.draw();
 	for (int i = 0; i < CHUNKS_COUNT; i++) {
-		//tChunks.terrainChunks[i].draw();
-		terrain.chunks[i].drawTest();
 		terrain.chunks[i].drawBoundingBox();;
 	}
+
 
     glutSwapBuffers();
     glutPostRedisplay();
