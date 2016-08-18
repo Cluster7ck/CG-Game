@@ -25,20 +25,14 @@
 struct TerrainVertex {
 	Vector Pos;
 	Vector Normal;
-	float u0, v0 = 0;
-	float u1, v1 = 0;
 };
 
 class TerrainChunk:public GameObject{
 public:
 	TerrainChunk();
 	~TerrainChunk();
-	bool load(const char* HeightMap, const char* DetailMap1, const char* DetailMap2, const char* MixMap, float Width, float Depth, float HeightMultiplier);
-	bool create(const char* HeightMap, const char* DetailMap1, const char* DetailMap2, const char* MixMap, float Width, float Depth, float HeightMultiplier, float OffsetX, float OffsetY);
+	bool create(float Width, float Depth, float HeightMultiplier, float OffsetX, float OffsetY, PerlinNoise pn);
 	void draw();
-	void drawTest();
-	void setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp, float MaxHeight, float MinHeight);
-	void drawWithShader();
 protected:
 	Vector position;
 	int terrain_offsetX;

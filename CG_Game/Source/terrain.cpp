@@ -9,7 +9,7 @@ void Terrain::initChunks() {
 
 	int chunksPerSide = sqrt(chunkCount);
 	int maxOffset = (chunksPerSide / 2);
-
+	PerlinNoise pn(0.05, 0.1, 20, 1, 666);
 	for (int y = 0; y < chunksPerSide; y++) {
 		for (int x = 0; x < chunksPerSide; x++) {
 
@@ -17,7 +17,7 @@ void Terrain::initChunks() {
 
 			int offsetX = (x % chunksPerSide) - maxOffset;
 			int offsetY = (chunksPerSide - 1 - y % chunksPerSide) - maxOffset;
-			chunks[x + y*chunksPerSide].create("Ressourcen/heightmap.bmp", "Ressourcen/grass.bmp", "Ressourcen/sand.bmp", "Ressourcen/mixmap.bmp", 60, 60, 7, offsetX, offsetY);
+			chunks[x + y*chunksPerSide].create(255, 255, 7, offsetX, offsetY, pn);
 			chunks[x + y*chunksPerSide].setShaders(this->m_ShaderProgram);
 		}
 	}
@@ -34,7 +34,7 @@ void Terrain::initChunks() {
 
 void Terrain::draw() {
 	m_ShaderProgram.activate();
-	setShaderUniforms(Vector(0, 64, 0), Color(1, 1, 1), Color(1.0, 1.0, 1.0), Color(0.6, 0, 0), Color(0.2, 0.2, 0.2), 1, 5.478, -5.9f);
+	setShaderUniforms(Vector(0, 64, 0), Color(1, 1, 1), Color(0.5, 0.2, 0.3), Color(0.6, 0, 0), Color(0.2, 0.2, 0.2), 1, maxHeight, minHeight);
 	for (int i = 0; i < chunkCount; i++) {
 		chunks[i].draw();
 	}
