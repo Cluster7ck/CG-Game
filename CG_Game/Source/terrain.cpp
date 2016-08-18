@@ -1,5 +1,9 @@
 #include "..\Header\Terrain.h"
 
+Terrain::~Terrain() {
+	delete[] chunks;
+}
+
 void Terrain::initChunks() {
 	chunks = new TerrainChunk[chunkCount];
 
@@ -14,7 +18,7 @@ void Terrain::initChunks() {
 			int offsetX = (x % chunksPerSide) - maxOffset;
 			int offsetY = (chunksPerSide - 1 - y % chunksPerSide) - maxOffset;
 			chunks[x + y*chunksPerSide].create("Ressourcen/heightmap.bmp", "Ressourcen/grass.bmp", "Ressourcen/sand.bmp", "Ressourcen/mixmap.bmp", 60, 60, 7, offsetX, offsetY);
-			chunks[x + y*chunksPerSide].loadShaders("Shader/vertexshader.glsl", "Shader/dumb_shader.glsl");
+			chunks[x + y*chunksPerSide].setShaders(this->m_ShaderProgram);
 		}
 	}
 	for (int i = 0; i < chunkCount; i++) {
@@ -29,12 +33,29 @@ void Terrain::initChunks() {
 }
 
 void Terrain::draw() {
+	m_ShaderProgram.activate();
+	setShaderUniforms(Vector(0, 64, 0), Color(1, 1, 1), Color(1.0, 1.0, 1.0), Color(0.6, 0, 0), Color(0.2, 0.2, 0.2), 1, 5.478, -5.9f);
 	for (int i = 0; i < chunkCount; i++) {
-		
-		chunks[i].drawTest();
+		chunks[i].draw();
 	}
+	m_ShaderProgram.deactivate();
 }
 
-Terrain::~Terrain() {
-	delete[] chunks;
+void Terrain::setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp, float MaxHeight, float MinHeight) {
+	GLint paraID = m_ShaderProgram.getParameterID("LightPos");
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("LightPos"), LightPos);
+	//paraID = m_ShaderProgram.getParameterID("litColor");
+	//m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("litColor"), LightColor);
+	paraID = m_ShaderProgram.getParameterID("DiffColor");
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("DiffColor"), DiffColor);
+	paraID = m_ShaderProgram.getParameterID("SpecColor");
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("SpecColor"), SpecColor);
+	paraID = m_ShaderProgram.getParameterID("AmbientColor");
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("AmbientColor"), AmbientColor);
+	paraID = m_ShaderProgram.getParameterID("SpecExp");
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("SpecExp"), SpecExp);
+	paraID = m_ShaderProgram.getParameterID("MaxHeight");
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("MaxHeight"), MaxHeight);
+	paraID = m_ShaderProgram.getParameterID("MinHeight");
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("MinHeight"), MinHeight);
 }

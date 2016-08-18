@@ -98,8 +98,12 @@ void GameObject::loadShaders(const char* VertexShader, const char* FragmentShade
 	}
 	std::cout << compileErrors << std::endl;
 }
+
+void GameObject::setShaders(ShaderProgram shaderProgram) {
+	m_ShaderProgram = shaderProgram;
+}
 /*
-void GameObject::drawWithShader(bool UseVertexSahder, bool UseFragmentShader) {
+void GameObject::drawWithShader() {
 	m_ShaderProgram.activate();
 	draw();
 	m_ShaderProgram.deactivate();

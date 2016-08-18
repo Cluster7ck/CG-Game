@@ -11,7 +11,7 @@
 #define CHUNKSIZE 60
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 Vector triangleNormal(Vector a, Vector b, Vector c);
-float map(float s, float a1, float a2, float b1, float b2);
+
 TerrainChunk::TerrainChunk() {
 }
 
@@ -289,9 +289,7 @@ bool TerrainChunk::create(const char* HeightMap, const char* DetailMap1, const c
 			Vertices[currentIndex].Pos.Z = (y / (CHUNKSIZE*1.0f)*Depth - (Depth / 2)) + OffsetY*(Depth-1);
 			//Height from Perlin Noise
 			Vertices[currentIndex].Pos.Y = pn.GetHeight(x + (CHUNKSIZE -1) * OffsetX, y + (CHUNKSIZE -1) * OffsetY) * HeightMultiplier;
-			//std::cout << "PN Height: " << pn.GetHeight(x + (CHUNKSIZE - 1) * OffsetX, y + (CHUNKSIZE - 1) * OffsetY) * HeightMultiplier << std::endl;
-			//std::cout << "Remapped: " << map(pn.GetHeight(x + (CHUNKSIZE - 1) * OffsetX, y + (CHUNKSIZE - 1) * OffsetY) * HeightMultiplier, -5.88486f, 5.47452f, 0, 1) << std::endl;
-			
+
 			Vertices[currentIndex].Normal = Vector();
 			//Für Mixmap
 			Vertices[currentIndex].u0 = x / (CHUNKSIZE * 1.0f);
@@ -331,7 +329,7 @@ bool TerrainChunk::create(const char* HeightMap, const char* DetailMap1, const c
 		}
 	}
 
-	std::cout << "BBox X -> Min: " << m_BoundingBox.Min.X << " Max: " << m_BoundingBox.Max.X << " Dist: " << m_BoundingBox.Max.X - m_BoundingBox.Min.X << std::endl;
+	std::cout << std::end << "BBox X -> Min: " << m_BoundingBox.Min.X << " Max: " << m_BoundingBox.Max.X << " Dist: " << m_BoundingBox.Max.X - m_BoundingBox.Min.X << std::endl;
 	std::cout << "BBox Y -> Min: " << m_BoundingBox.Min.Y << " Max: " << m_BoundingBox.Max.Y << " Dist: " << m_BoundingBox.Max.Y - m_BoundingBox.Min.Y << std::endl;
 	std::cout << "BBox Z -> Min: " << m_BoundingBox.Min.Z << " Max: " << m_BoundingBox.Max.Z << " Dist: " << m_BoundingBox.Max.Z - m_BoundingBox.Min.Z << std::endl;
 
@@ -511,159 +509,31 @@ bool TerrainChunk::create(const char* HeightMap, const char* DetailMap1, const c
 }
 
 void TerrainChunk::draw() {
-	//setShaderUniforms(Vector(0, 64, 0), Color(1, 1, 1), Color(1.0, 1.0, 1.0), Color(0.6, 0, 0), Color(0.2, 0.2, 0.2), 4);
-
-	// inform the client that we want to use array buffers
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
 
+	#ifdef GL_DEBUG
+		check_gl_error();
+	#endif // DEBUG
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
-	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	// setup position & normal pointers
 	glVertexPointer(3, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(0));
 	glNormalPointer(GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(12));
 
-	// setup mixtexture
-	glActiveTexture(GL_TEXTURE0);
-	glClientActiveTexture(GL_TEXTURE0);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(24));
-	m_MixingRatio.apply();
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	// setup texture-environment-unit 0 => grass
-	glActiveTexture(GL_TEXTURE1);
-	glClientActiveTexture(GL_TEXTURE1);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(32)); // first uv-set
-	m_GrassTex.apply();
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-	// setup texture-environment-unit 1 => sand
-	glActiveTexture(GL_TEXTURE2);
-	glClientActiveTexture(GL_TEXTURE2);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(32)); // second uv-set
-	m_SandTex.apply();
-
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-	glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_INTERPOLATE);
-
-	//Interpolate between grass and sand with factor from mixmap
-	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE1);
-	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE2);
-	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE2_RGB, GL_TEXTURE0);
-	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_ONE_MINUS_SRC_COLOR);
-
-	//save current state in texture so we can multiply with the shadow
-	glActiveTexture(GL_TEXTURE3);
-	glClientActiveTexture(GL_TEXTURE3);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(32));
-	m_GrassTex.apply();
-
-	//multiply
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-	glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-	glTexEnvf(GL_TEXTURE_ENV, GL_SRC0_RGB, GL_PREVIOUS);
-	glTexEnvf(GL_TEXTURE_ENV, GL_SRC1_RGB, GL_PRIMARY_COLOR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-
-
-	// we draw our terrain
-	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
-	
-	/*
-	glColor3d(1.0, 0.0, 0.0);
-	char* bla = "bla";
-	glRasterPos2f(500, 500);
-	int len = (int)strlen(bla);
-	for (int i = 0; i < len; i++) {
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, bla[i]);
-	}
-	*/
-	// disable states in reverse order
-	glDisable(GL_TEXTURE_2D);
-
-	glActiveTexture(GL_TEXTURE1);
-	glClientActiveTexture(GL_TEXTURE1);
-	glDisable(GL_TEXTURE_2D);
-
-	glActiveTexture(GL_TEXTURE0);
-	glClientActiveTexture(GL_TEXTURE0);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	
-}
-
-void TerrainChunk::drawTest() {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
 	#ifdef GL_DEBUG
 		check_gl_error();
 	#endif // DEBUG
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	
-	// setup position & normal pointers
-	glVertexPointer(3, GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(0));
-	glNormalPointer(GL_FLOAT, sizeof(TerrainVertex), BUFFER_OFFSET(12));
-	
-	m_ShaderProgram.activate();
-	setShaderUniforms(Vector(0, 64, 0), Color(1, 1, 1), Color(1.0, 1.0, 1.0), Color(0.6, 0, 0), Color(0.2, 0.2, 0.2), 1, 5.478, -5.9f);
-	
-	#ifdef GL_DEBUG
-		check_gl_error();
-	#endif // DEBUG
 	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
 
-	m_ShaderProgram.deactivate();
-	
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
-
-}
-
-void TerrainChunk::setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp, float MaxHeight, float MinHeight) {
-	GLint paraID = m_ShaderProgram.getParameterID("LightPos");
-	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("LightPos"), LightPos);
-	//paraID = m_ShaderProgram.getParameterID("litColor");
-	//m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("litColor"), LightColor);
-	paraID = m_ShaderProgram.getParameterID("DiffColor");
-	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("DiffColor"), DiffColor);
-	paraID = m_ShaderProgram.getParameterID("SpecColor");
-	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("SpecColor"), SpecColor);
-	paraID = m_ShaderProgram.getParameterID("AmbientColor");
-	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("AmbientColor"), AmbientColor);
-	paraID = m_ShaderProgram.getParameterID("SpecExp");
-	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("SpecExp"), SpecExp);
-	paraID = m_ShaderProgram.getParameterID("MaxHeight");
-	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("MaxHeight"), MaxHeight);
-	paraID = m_ShaderProgram.getParameterID("MinHeight");
-	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("MinHeight"), MinHeight);
 }
 
 Vector triangleNormal(Vector a, Vector b, Vector c) {
 	return (b - a).cross(c - a);
-}
-
-float map(float s, float a1, float a2, float b1, float b2)
-{
-	return b1 + (s - a1)*(b2 - b1) / (a2 - a1);
-}
-
-void TerrainChunk::drawWithShader() {
-	m_ShaderProgram.activate();
-	draw();
-	m_ShaderProgram.deactivate();
 }
