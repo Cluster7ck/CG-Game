@@ -20,14 +20,12 @@ TerrainChunk::~TerrainChunk() {
 }
 
 bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, float OffsetX, float OffsetY, PerlinNoise pn) {
-	//cant have more than one
 	terrain_offsetX = OffsetX;
 	terrain_offsetY = OffsetY;
-	// Vertices
+
 	TerrainVertex* Vertices = new TerrainVertex[CHUNKSIZE*CHUNKSIZE];
 
 	unsigned int k = 8;
-	HeightMultiplier = 1;
 	for (int x = 0; x < CHUNKSIZE; x++) {
 		for (int y = 0; y < CHUNKSIZE; y++) {
 			int currentIndex = x * CHUNKSIZE + y;

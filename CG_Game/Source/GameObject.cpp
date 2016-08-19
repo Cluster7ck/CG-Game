@@ -1,5 +1,7 @@
 #include "..\Header\GameObject.h"
 
+
+
 Vertex::Vertex() {
 }
 
@@ -35,7 +37,7 @@ ShaderProgram GameObject::getShaderProgram() {
 void GameObject::drawBoundingBox() {
 	glDisable(GL_LIGHTING);
 	glBegin(GL_LINES);
-	glColor3f(1, 0, 0);		//rgb(60%,20%,60%) = violette
+	glColor3f(1.0,1.0,0);		//rgb(60%,20%,60%) = violette
 
 	//Back side
 	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Min.Y, m_BoundingBox.Min.Z);
@@ -102,10 +104,3 @@ void GameObject::loadShaders(const char* VertexShader, const char* FragmentShade
 void GameObject::setShaders(ShaderProgram shaderProgram) {
 	m_ShaderProgram = shaderProgram;
 }
-/*
-void GameObject::drawWithShader() {
-	m_ShaderProgram.activate();
-	draw();
-	m_ShaderProgram.deactivate();
-}
-*/

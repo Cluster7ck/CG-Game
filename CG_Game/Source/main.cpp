@@ -19,11 +19,11 @@
 //#include "../Header/PlaneModel.h"
 #include "../Header/Terrain.h"
 
-#define CHUNKS_COUNT 25
+#define CHUNKS_COUNT 9
 
 // window x and y size
-const unsigned int g_WindowWidth=1024;
-const unsigned int g_WindowHeight=768;
+const unsigned int g_WindowWidth=1400;
+const unsigned int g_WindowHeight=900;
 
 // light position (point light)
 const Vector g_LightPos = Vector( 0,64,0);
@@ -40,7 +40,7 @@ void DrawScene();
 void MouseCallback(int Button, int State, int x, int y);
 void MouseMoveCallback(int x, int y);
 void KeyboardCallback( unsigned char key, int x, int y);
-
+void SpecialKeyboardCallback(int key, int x, int y);
 int main(int argc, char * argv[]) {
     // initialize the glut system and create a window
     glutInitWindowSize(g_WindowWidth, g_WindowHeight);
@@ -57,6 +57,7 @@ int main(int argc, char * argv[]) {
     glutMouseFunc(MouseCallback);
     glutKeyboardFunc(KeyboardCallback);
     glutMotionFunc(MouseMoveCallback);
+	glutSpecialFunc(SpecialKeyboardCallback);
 
 	terrain.loadShaders("Shader/vertexshader.glsl", "Shader/dumb_shader.glsl");
 	terrain.initChunks();
@@ -135,6 +136,33 @@ void MouseMoveCallback( int x, int y) {
 void KeyboardCallback( unsigned char key, int x, int y) {    
 }
 
+void SpecialKeyboardCallback(int key, int x, int y) {
+	// function is called if a special keyboard button is pressed (e. g. Up-arrow-Key)
+	static int offsetX = 0;
+	static int offsetY = 0;
+	switch (key) {
+	//up
+	case 101:
+		offsetX++;
+		break;
+	//down
+	case 103:
+		offsetX--;
+		break;
+	//left
+	case 100:
+		offsetY--;
+		break;
+	//right
+	case 102:
+		offsetY++;
+		break;
+	default:
+		x = y = 0;
+		break;
+	}
+	terrain.setTerrainCenter(offsetX, offsetY);
+}
 void DrawScene() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -148,10 +176,7 @@ void DrawScene() {
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 	
 	terrain.draw();
-	for (int i = 0; i < CHUNKS_COUNT; i++) {
-		terrain.chunks[i].drawBoundingBox();;
-	}
-
+	terrain.drawBoundingBox();
 
     glutSwapBuffers();
     glutPostRedisplay();
