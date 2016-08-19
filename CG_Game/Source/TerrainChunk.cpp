@@ -8,11 +8,12 @@
 
 #include "../Header/TerrainChunk.h"
 
-#define CHUNKSIZE 255
+
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 Vector triangleNormal(Vector a, Vector b, Vector c);
 
 TerrainChunk::TerrainChunk() {
+	isBound = false;
 }
 
 TerrainChunk::~TerrainChunk() {
@@ -23,7 +24,7 @@ bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, floa
 	terrain_offsetX = OffsetX;
 	terrain_offsetY = OffsetY;
 
-	TerrainVertex* Vertices = new TerrainVertex[CHUNKSIZE*CHUNKSIZE];
+	Vertices = new TerrainVertex[CHUNKSIZE*CHUNKSIZE];
 
 	unsigned int k = 8;
 	for (int x = 0; x < CHUNKSIZE; x++) {
@@ -73,7 +74,7 @@ bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, floa
 
 	// Indices
 	indicesCount = (CHUNKSIZE * CHUNKSIZE) * 6;
-	unsigned int *Indices = new unsigned int[indicesCount];
+	Indices = new unsigned int[indicesCount];
 	unsigned int vertexIndex = 0;
 
 	for (int x = 0; x < CHUNKSIZE; x++) {
@@ -232,7 +233,7 @@ bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, floa
 			Vertices[x * CHUNKSIZE + y].Normal = vertexNormal * -1;
 		}
 	}
-
+	/*
 	// create gpu buffer for vertices
 	glGenBuffers(1, &m_VertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
@@ -242,8 +243,23 @@ bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, floa
 	glGenBuffers(1, &m_IndexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indicesCount, Indices, GL_STATIC_DRAW);
-
+	*/
 	return true;
+}
+
+void TerrainChunk::bindBuffers() {
+	if (!isBound) {
+		glGenBuffers(1, &m_VertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(TerrainVertex) * (CHUNKSIZE * CHUNKSIZE), Vertices, GL_STATIC_DRAW);
+
+		// create gpu buffer for indices
+		glGenBuffers(1, &m_IndexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indicesCount, Indices, GL_STATIC_DRAW);
+
+		isBound = true;
+	}
 }
 
 void TerrainChunk::draw() {

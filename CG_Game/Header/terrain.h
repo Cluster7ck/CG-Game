@@ -1,7 +1,11 @@
 #ifndef Terrain_h
 #define Terrain_h
+
 #include <map>
+#include <thread>
+
 #include "TerrainChunk.h"
+#define CHUNKSIZE 60
 
 struct TerrainOffset {
 	int offsetX;
@@ -18,9 +22,9 @@ public:
 	void initChunks();
 	void draw();
 	void setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp, float MinHeight, float MaxHeight);
-	TerrainChunk* chunks;
 	void setTerrainCenter(int x, int y);
 private:
+	void createChunkThread(TerrainOffset ChunkOffset);
 	int chunkCount;
 	int chunksPerSide;
 	int maxOffset;

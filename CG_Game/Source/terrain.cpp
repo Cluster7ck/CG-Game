@@ -2,11 +2,9 @@
 float map(float s, float a1, float a2, float b1, float b2);
 
 Terrain::~Terrain() {
-	delete[] chunks;
 }
 
 void Terrain::initChunks() {
-	chunks = new TerrainChunk[chunkCount];
 	terrainNoise.Set(0.05, 0.1, 20, 1, 666);
 	currentCenter.offsetX = 0;
 	currentCenter.offsetY = 0;
@@ -21,7 +19,8 @@ void Terrain::initChunks() {
 			tempOffset.offsetX = (x % chunksPerSide) - maxOffset;
 			tempOffset.offsetY = (chunksPerSide - 1 - y % chunksPerSide) - maxOffset;
 
-			tempChunk.create(255, 255, 7, tempOffset.offsetX, tempOffset.offsetY, terrainNoise);
+			tempChunk.create(CHUNKSIZE, CHUNKSIZE, 1, tempOffset.offsetX, tempOffset.offsetY, terrainNoise);
+			tempChunk.bindBuffers();
 			tempChunk.setShaders(this->m_ShaderProgram);
 
 			std::pair<TerrainOffset,TerrainChunk> p(tempOffset, tempChunk);
@@ -54,6 +53,14 @@ void Terrain::initChunks() {
 	std::cout << "\nTerrain Max Height: " << m_BoundingBox.Max.Y << std::endl;
 }
 
+void Terrain::createChunkThread(TerrainOffset ChunkOffset) {
+	TerrainChunk tempChunk;
+	tempChunk.create(CHUNKSIZE, CHUNKSIZE, 1, ChunkOffset.offsetX, ChunkOffset.offsetY, terrainNoise);
+	tempChunk.setShaders(this->m_ShaderProgram);
+	std::pair<TerrainOffset, TerrainChunk> p(ChunkOffset, tempChunk);
+	terrainMap.insert(p);
+}
+
 void Terrain::draw() {
 	std::map<TerrainOffset, TerrainChunk>::iterator it;
 	TerrainOffset tempOffset;
@@ -69,20 +76,23 @@ void Terrain::draw() {
 
 			it = terrainMap.find(tempOffset);
 			if (it != terrainMap.end()) {
+				it->second.bindBuffers();
 				it->second.draw();
 				it->second.drawBoundingBox();
 			}
 			else{
-				tempChunk.create(255, 255, 7, tempOffset.offsetX, tempOffset.offsetY, terrainNoise);
+				/*tempChunk.create(255, 255, 1, tempOffset.offsetX, tempOffset.offsetY, terrainNoise);
 				tempChunk.setShaders(this->m_ShaderProgram);
 				std::pair<TerrainOffset, TerrainChunk> p(tempOffset, tempChunk);
-				terrainMap.insert(p);
+				terrainMap.insert(p);*/
 				/*
 				NEW THREAD
 				create Chunk
 				return Chunk
-				add to map
-				*/
+				add to map*/
+				
+				std::thread thread1(&Terrain::createChunkThread, this,tempOffset);
+				thread1.detach();
 			}
 		}
 	}

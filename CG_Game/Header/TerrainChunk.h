@@ -22,6 +22,8 @@
 #include "PerlinNoise.h"
 #include "GLError.h"
 
+#define CHUNKSIZE 60
+
 struct TerrainVertex {
 	Vector Pos;
 	Vector Normal;
@@ -32,11 +34,15 @@ public:
 	TerrainChunk();
 	~TerrainChunk();
 	bool create(float Width, float Depth, float HeightMultiplier, float OffsetX, float OffsetY, PerlinNoise pn);
+	void bindBuffers();
 	void draw();
 protected:
 	Vector position;
+	TerrainVertex* Vertices;
+	unsigned int *Indices;
 	int terrain_offsetX;
 	int terrain_offsetY;
+	bool isBound;
 	Texture m_HeightMap;
 	Texture m_GrassTex;
 	Texture m_SandTex;
