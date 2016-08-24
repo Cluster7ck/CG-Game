@@ -1,3 +1,4 @@
+#version  130
 uniform vec3 LightPos;
 uniform vec3 LightColor;
 
@@ -9,10 +10,10 @@ uniform float SpecExp;
 uniform float MaxHeight;
 uniform float MinHeight;
 
-varying vec3 Normal;
-varying vec3 Position;
-varying vec2 Texcoord;
-varying vec3 PointWorldPos;
+in vec3 Normal;
+in vec3 Position;
+in vec2 Texcoord;
+in vec3 PointWorldPos;
 
 float sat(float a) {
     return clamp(a, 0.0, 1.0);
@@ -38,7 +39,16 @@ void main(void) {
 
 	//float HeightRemapped = (WorldPos.z - MinHeight) * 1/ (MaxHeight-MinHeight);
 	float HeightRemapped = map(PointWorldPos.y,MinHeight,MaxHeight,0,1);
-	vec3 DiffuseTexColor;
+	vec4 DiffuseTexColor;
+	vec4 TopColor = vec4(0.2,0.6,0,0);
+	vec4 MidColor = vec4(1.0,0,1.0,0);
+	vec4 BotColor =  vec4(0.6,0.8,0,0);
+	DiffuseTexColor = mix (MidColor, TopColor, HeightRemapped);
+	DiffuseTexColor = mix (BotColor, DiffuseTexColor, HeightRemapped);
+	
+	//DiffuseTexColor = mix(BotColor, MidColor, HeightRemapped);
+	//DiffuseTexColor = mix(DiffuseTexColor, TopColor, HeightRemapped);
+	/*
 	if(HeightRemapped < 0.33f ){
 		DiffuseTexColor = vec4(1.0,1.0,0,0);
 	}
@@ -50,11 +60,10 @@ void main(void) {
 				DiffuseTexColor = vec4(1.0,0,1.0,0);
 			}   
 	}
- 
-	
-    DiffuseComponent *= DiffuseTexColor;
-    vec3 AmbientComponent = AmbientColor * DiffuseTexColor;
-
+	*/
+    DiffuseComponent *= vec3(DiffuseTexColor);
+    vec3 AmbientComponent = AmbientColor * vec3(DiffuseTexColor);
     gl_FragColor = vec4(DiffuseComponent + SpecularComponent + AmbientComponent, 0);
+	//vec4(DiffuseTexColor,0);//
 	//gl_FragColor = vec4(1.0,1.0,0,0);
 }

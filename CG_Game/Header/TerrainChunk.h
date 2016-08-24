@@ -22,7 +22,7 @@
 #include "PerlinNoise.h"
 #include "GLError.h"
 
-#define CHUNKSIZE 60
+#define CHUNKSIZE 80
 
 struct TerrainVertex {
 	Vector Pos;

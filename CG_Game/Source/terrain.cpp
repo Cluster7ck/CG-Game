@@ -5,7 +5,7 @@ Terrain::~Terrain() {
 }
 
 void Terrain::initChunks() {
-	terrainNoise.Set(0.05, 0.1, 20, 1, 666);
+	terrainNoise.Set(0.5, 0.042, 40, 1, 666);
 	currentCenter.offsetX = 0;
 	currentCenter.offsetY = 0;
 
@@ -67,8 +67,9 @@ void Terrain::draw() {
 	TerrainChunk tempChunk;
 
 	m_ShaderProgram.activate();
-	setShaderUniforms(Vector(0, 64, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.6, 0, 0), Color(0.2, 0.2, 0.2), 1, m_BoundingBox.Min.Y, m_BoundingBox.Max.Y);
+	setShaderUniforms(Vector(0, 64, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.1, 0.1, 0.1), Color(0.2, 0.2, 0.2), 1, m_BoundingBox.Min.Y, m_BoundingBox.Max.Y);
 
+	int sideSize = chunksPerSide;
 	for (int y = 0; y < chunksPerSide; y++) {
 		for (int x = 0; x < chunksPerSide; x++) {
 			tempOffset.offsetX = ((x % chunksPerSide) - maxOffset) + currentCenter.offsetX;
@@ -77,20 +78,16 @@ void Terrain::draw() {
 			it = terrainMap.find(tempOffset);
 			if (it != terrainMap.end()) {
 				it->second.bindBuffers();
-				it->second.draw();
-				it->second.drawBoundingBox();
+				if ((x != 0 && x != chunksPerSide - 1 && y != 0 && y != chunksPerSide - 1)) {
+					it->second.draw();
+					it->second.drawBoundingBox();
+				}
 			}
 			else{
-				/*tempChunk.create(255, 255, 1, tempOffset.offsetX, tempOffset.offsetY, terrainNoise);
-				tempChunk.setShaders(this->m_ShaderProgram);
-				std::pair<TerrainOffset, TerrainChunk> p(tempOffset, tempChunk);
-				terrainMap.insert(p);*/
-				/*
-				NEW THREAD
-				create Chunk
-				return Chunk
-				add to map*/
-				
+				static int bla = 0;
+				bla++;
+				std::cout<< "Num : "<< bla << " <<<<< Offx " << tempOffset.offsetX << " OffY " << tempOffset.offsetY << std::endl;
+
 				std::thread thread1(&Terrain::createChunkThread, this,tempOffset);
 				thread1.detach();
 			}

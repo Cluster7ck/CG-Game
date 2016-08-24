@@ -19,7 +19,7 @@
 //#include "../Header/PlaneModel.h"
 #include "../Header/Terrain.h"
 
-#define CHUNKS_COUNT 9
+#define CHUNKS_COUNT 49
 
 // window x and y size
 const unsigned int g_WindowWidth=1400;
