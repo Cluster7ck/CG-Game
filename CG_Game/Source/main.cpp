@@ -32,9 +32,11 @@ float deltaTime = 0;
 int elapsedTimeLastFrame = 0;
 
 //Terrain
-Terrain terrain(CHUNKS_COUNT);
+PerlinNoise noise(0.5, 0.042, 10, 1, 1400);
+Terrain terrain(CHUNKS_COUNT, noise);
 Camera g_Camera;
-Ball ball(2);
+Ball ball(0.8,noise);
+float keyStore[4];
 
 int g_MouseButton = 0;
 int g_MouseState = 0;
@@ -44,6 +46,7 @@ void DrawScene();
 void MouseCallback(int Button, int State, int x, int y);
 void MouseMoveCallback(int x, int y);
 void KeyboardCallback( unsigned char key, int x, int y);
+void KeyboardUpCallback(unsigned char key, int x, int y);
 void SpecialKeyboardCallback(int key, int x, int y);
 int main(int argc, char * argv[]) {
     // initialize the glut system and create a window
@@ -60,6 +63,7 @@ int main(int argc, char * argv[]) {
     glutDisplayFunc(DrawScene);
     glutMouseFunc(MouseCallback);
     glutKeyboardFunc(KeyboardCallback);
+	glutKeyboardUpFunc(KeyboardUpCallback);
     glutMotionFunc(MouseMoveCallback);
 	glutSpecialFunc(SpecialKeyboardCallback);
 
@@ -138,7 +142,48 @@ void MouseMoveCallback( int x, int y) {
     g_Camera.mouseInput(x,y,g_MouseButton,g_MouseState);
 }
  
-void KeyboardCallback( unsigned char key, int x, int y) {    
+void KeyboardCallback(unsigned char key, int x, int y) {
+	// function is called if a regular keyboard button is pressed
+	switch (key) {
+	case 'w':
+		keyStore[0] = 1;
+		break;
+	case 's':
+		keyStore[1] = -1;
+		break;
+	case 'a':
+		keyStore[2] = -1;
+		break;
+	case 'd':
+		keyStore[3] = 1;
+		break;
+	default:
+		x = y = 0;
+		break;
+	}
+	ball.steer(keyStore[0] + keyStore[1], keyStore[2] + keyStore[3]);
+}
+
+void KeyboardUpCallback(unsigned char key, int x, int y) {
+	// function is called if a special keyboard button is pressed (e. g. Up-arrow-Key)
+	switch (key) {
+	case 'w':
+		keyStore[0] = 0;
+		break;
+	case 's':
+		keyStore[1] = 0;
+		break;
+	case 'a':
+		keyStore[2] = 0;
+		break;
+	case 'd':
+		keyStore[3] = 0;
+		break;
+	default:
+		x = y = 0;
+		break;
+	}
+	ball.steer(keyStore[0] + keyStore[1], keyStore[2] + keyStore[3]);
 }
 
 void SpecialKeyboardCallback(int key, int x, int y) {
@@ -185,7 +230,7 @@ void DrawScene() {
 	
 	terrain.draw();
 	terrain.drawBoundingBox();
-	ball.draw(deltaTime);
+	ball.update(deltaTime);
 	ball.drawAxis();
 
     glutSwapBuffers();

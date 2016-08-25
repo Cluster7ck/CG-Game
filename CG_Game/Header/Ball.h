@@ -13,10 +13,11 @@
 
 #include <algorithm>
 
-#include "../Header/vector.h"
-#include "../Header/model.h"
-#include "../Header/matrix.h"
-#include "../Header/camera.h"
+#include "PerlinNoise.h"
+#include "vector.h"
+#include "model.h"
+#include "matrix.h"
+#include "camera.h"
 
 extern Camera g_Camera;
 
@@ -32,7 +33,7 @@ public:
 								0.0f, 0.0f, 0.0f, 0.0f,
 								0.0f, 0.0f, 0.0f, 0.0f,
 								0.0f, 0.0f, 0.0f, 0.0f);
-	Ball(float speed);
+	Ball(float speed, PerlinNoise terrainNoise);
 	~Ball();
 	bool load(const char* BallModel, const Vector& StartPos);
 	void steer(float ForwardBackward, float LeftRight);
@@ -41,6 +42,7 @@ public:
 	void drawAxis();
 private:
 	Vector velocity;
+	PerlinNoise terrainNoise;
 	float speed;
 	int rotationX;
 	int rotationZ;

@@ -5,7 +5,7 @@ Terrain::~Terrain() {
 }
 
 void Terrain::initChunks() {
-	terrainNoise.Set(0.5, 0.042, 40, 1, 666);
+	
 	currentCenter.offsetX = 0;
 	currentCenter.offsetY = 0;
 

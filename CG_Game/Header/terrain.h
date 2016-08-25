@@ -11,14 +11,15 @@
 struct TerrainOffset {
 	int offsetX;
 	int offsetY;
-
+	//For map Key
 	bool operator<(const TerrainOffset &o) const {
 		return offsetX < o.offsetX || (offsetX == o.offsetX && offsetY < o.offsetY);
 	}
 };
+
 class Terrain:public GameObject {
 public:
-	Terrain(int chunkCount) : chunkCount(chunkCount) {};
+	Terrain(int chunkCount, PerlinNoise terrainNoise) : chunkCount(chunkCount), terrainNoise(terrainNoise) {};
 	~Terrain();
 	void initChunks();
 	void draw();

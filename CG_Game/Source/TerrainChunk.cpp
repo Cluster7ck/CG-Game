@@ -33,7 +33,7 @@ bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, floa
 			Vertices[currentIndex].Pos.X = (x / (CHUNKSIZE*1.0f)*Width - (Width / 2)) + OffsetX*(Width-1);
 			Vertices[currentIndex].Pos.Z = (y / (CHUNKSIZE*1.0f)*Depth - (Depth / 2)) + OffsetY*(Depth-1);
 			//Height from Perlin Noise
-			Vertices[currentIndex].Pos.Y = pn.GetHeight(x + (CHUNKSIZE -1) * OffsetX, y + (CHUNKSIZE -1) * OffsetY) * HeightMultiplier;
+			Vertices[currentIndex].Pos.Y = pn.GetHeight(Vertices[currentIndex].Pos.X, Vertices[currentIndex].Pos.Z) * HeightMultiplier;
 
 			Vertices[currentIndex].Normal = Vector();
 		}
