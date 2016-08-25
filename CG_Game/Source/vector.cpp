@@ -31,6 +31,18 @@ Vector Vector::cross(const Vector& v) const {
 
 }
 
+bool Vector::operator==(const Vector& v) const {
+	if (this->X == v.X && this->Y == v.Y && this->Z == v.Z)
+		return true;
+	return false;
+}
+
+bool Vector::operator!=(const Vector& v) const {
+	if (this->X == v.X && this->Y == v.Y && this->Z == v.Z)
+		return false;
+	return true;
+}
+
 Vector Vector::operator+(const Vector& v) const {
     Vector nv;
 
@@ -131,4 +143,56 @@ bool Vector::triangleIntersection(const Vector& d, const Vector& a, const Vector
     }
     
 	return false;
+}
+/*
+float Vector::cosinus(int degree) const {
+	float radian = degree * M_PI / 180.0f;
+	float cosinus = cos(radian);
+
+	if(degree == 90 || degree == -90) {
+		cosinus = 0.0f;
+	}
+
+	return cosinus;
+}
+
+float Vector::sinus(int degree) const {
+	float radian = degree * M_PI / 180.0f;
+	float sinus = sin(radian);
+
+	if(degree == 180 || degree == -180) {
+		sinus = 0.0f;
+	}
+
+	return sinus;
+}
+*/
+Vector Vector::rotationX(int degree) const {
+	Vector nv;
+
+	nv.X = this->X;
+	nv.Y = (cos(degree) * this->Y) + (-sin(degree) * this->Z);
+	nv.Z = (sin(degree) * this->Y) + (cos(degree) * this->Z);
+
+	return nv;
+}
+
+Vector Vector::rotationY(int degree) const {
+	Vector nv;
+
+	nv.X = (cos(degree) * this->X) + (-sin(degree) * this->Z);
+	nv.Y = this->Y;
+	nv.Z = (sin(degree) * this->X) + (cos(degree) * this->Z);
+
+	return nv;
+}
+
+Vector Vector::rotationZ(int degree) const {
+	Vector nv;
+
+	nv.X = (cos(degree) * this->X) + (-sin(degree) * this->Y);
+	nv.Y = (sin(degree) * this->X) + (cos(degree) * this->Y);
+	nv.Z = this->Z;
+
+	return nv;
 }

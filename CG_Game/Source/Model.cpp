@@ -6,35 +6,14 @@
 //  Copyright (c) 2014 Philipp Lensing. All rights reserved.
 //
 
-#ifdef WIN32
-	#include <Windows.h>
-	#include <GL/glew.h>
-	#include <GL/GLUT.h>
-	#include <GL/GL.h>
-#else
-	#include <OpenGL/OpenGL.h>
-	#include <GLUT/GLUT.h>
-#endif
+#include <Windows.h>
+#include <GL/glew.h>
+#include <GL/GLUT.h>
+#include <GL/GL.h>
 
 #include "../Header/Model.h"
 
 void setMaterial(Material m);
-
-Vertex::Vertex() {
-}
-
-Vertex::Vertex( const Vector& p, const Vector& n, float TexS, float TexT) {
-    Position = p;
-    Normal = n;
-    TexcoordS = TexS;
-    TexcoordT = TexT;
-}
-
-BoundingBox::BoundingBox() {
-}
-
-BoundingBox::BoundingBox( const Vector& min, const Vector& max) : Min(min), Max(max) {
-}
 
 Model::Model() : m_pVertices(NULL), m_pMaterials(NULL), m_MaterialCount(0), m_VertexCount(0) {
 
@@ -222,38 +201,38 @@ void Model::createObject(const char* Filename, bool FitSize) {
 	}
 
 	// BoundingBox 
-	m_Box.Max.X = m_Box.Min.X = v[0].X;
-	m_Box.Max.Y = m_Box.Min.Y = v[0].Y;
-	m_Box.Max.Z = m_Box.Min.Z = v[0].Z;
+	m_BoundingBox.Max.X = m_BoundingBox.Min.X = v[0].X;
+	m_BoundingBox.Max.Y = m_BoundingBox.Min.Y = v[0].Y;
+	m_BoundingBox.Max.Z = m_BoundingBox.Min.Z = v[0].Z;
 
 	for (unsigned int i = 0; i < v.size(); i++) {
 		Vector vertex = v[i];
 
 		// Box kleiner
-		if (m_Box.Min.X < vertex.X) {
-			m_Box.Min.X = vertex.X;
+		if (m_BoundingBox.Min.X < vertex.X) {
+			m_BoundingBox.Min.X = vertex.X;
 		}
-		if (m_Box.Min.Y < vertex.Y) {
-			m_Box.Min.Y = vertex.Y;
+		if (m_BoundingBox.Min.Y < vertex.Y) {
+			m_BoundingBox.Min.Y = vertex.Y;
 		}
-		if (m_Box.Min.Z < vertex.Z) {
-			m_Box.Min.Z = vertex.Z;
+		if (m_BoundingBox.Min.Z < vertex.Z) {
+			m_BoundingBox.Min.Z = vertex.Z;
 		}
 		// Box größer
-		if (m_Box.Max.X > vertex.X) {
-			m_Box.Max.X = vertex.X;
+		if (m_BoundingBox.Max.X > vertex.X) {
+			m_BoundingBox.Max.X = vertex.X;
 		}
-		if (m_Box.Max.Y > vertex.Y) {
-			m_Box.Max.Y = vertex.Y;
+		if (m_BoundingBox.Max.Y > vertex.Y) {
+			m_BoundingBox.Max.Y = vertex.Y;
 		}
-		if (m_Box.Max.Z > vertex.Z) {
-			m_Box.Max.Z = vertex.Z;
+		if (m_BoundingBox.Max.Z > vertex.Z) {
+			m_BoundingBox.Max.Z = vertex.Z;
 		}
 	}
 
 	// Objekt skalieren
 	if (FitSize) {
-		float scale = 7 / ((m_Box.Min - m_Box.Max).length()*2);
+		float scale = 7 / ((m_BoundingBox.Min - m_BoundingBox.Max).length()*2);
 		for (unsigned int i = 0; i < v.size(); i++) {
 			v[i] = v[i] * scale;
 		}
@@ -491,10 +470,6 @@ void Model::createMaterials(const char* Filename) {
 	fileStream.close();
 }
 
-const BoundingBox& Model::boundingBox() const {
-    return m_Box;
-}
-
 void Model::drawLines() const {
 	glBegin(GL_LINES);
 	glColor3f(0.60, 0.20, 0.60);		//rgb(60%,20%,60%) = violette
@@ -513,7 +488,7 @@ void Model::drawLines() const {
 	glEnd();
 }
 
-void Model::drawTriangles() const {
+void Model::draw(){
 	//Draw Triangles for every Material
 	if (m_mtlMap.empty()) {
 		glBegin(GL_TRIANGLES);

@@ -1,5 +1,5 @@
-#ifndef GAMEOBJECT_H
-#define _GAMEOBJECT_H
+#ifndef Gameobject_h
+#define Gameobject_h
 
 #include <windows.h>
 #include <GL/glew.h>
@@ -34,7 +34,7 @@ public:
 	virtual ~GameObject() = 0;
 	virtual void draw() = 0;
 	void drawBoundingBox();
-	BoundingBox getBoundingBox();
+	const BoundingBox& getBoundingBox() const;
 	ShaderProgram getShaderProgram();
 	void loadShaders(const char* VertexShader, const char* FragmentShader);
 	void setShaders(ShaderProgram shaderProgram);

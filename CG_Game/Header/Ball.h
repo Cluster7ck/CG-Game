@@ -1,0 +1,49 @@
+//
+//  ball.h
+//
+//  Created by on 30.04.16.
+//  Copyright © 2016 hsos. All rights reserved.
+//
+
+#ifndef Ball_h
+#define Ball_h
+
+#define _USE_MATH_DEFINES
+#define NOMINMAX
+
+#include <algorithm>
+
+#include "../Header/vector.h"
+#include "../Header/model.h"
+#include "../Header/matrix.h"
+#include "../Header/camera.h"
+
+extern Camera g_Camera;
+
+class Ball {
+public:
+	Model g_Model_ball;
+	Vector aimTarget;
+	float straight = 0.0;
+	float side = 0.0;
+
+	Matrix m_Ball;
+	Matrix m_Rotation = Matrix(0.0f, 0.0f, 0.0f, 0.0f,
+								0.0f, 0.0f, 0.0f, 0.0f,
+								0.0f, 0.0f, 0.0f, 0.0f,
+								0.0f, 0.0f, 0.0f, 0.0f);
+	Ball(float speed);
+	~Ball();
+	bool load(const char* BallModel, const Vector& StartPos);
+	void steer(float ForwardBackward, float LeftRight);
+	void update(float DeltaTime);
+	void draw(float DeltaTime);
+	void drawAxis();
+private:
+	Vector velocity;
+	float speed;
+	int rotationX;
+	int rotationZ;
+};
+
+#endif /* ball_h */

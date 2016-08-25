@@ -16,7 +16,7 @@
 
 #include "../Header/Camera.h"
 #include "../Header/texture.h"
-//#include "../Header/PlaneModel.h"
+#include "../Header/Ball.h"
 #include "../Header/Terrain.h"
 
 #define CHUNKS_COUNT 49
@@ -28,9 +28,13 @@ const unsigned int g_WindowHeight=900;
 // light position (point light)
 const Vector g_LightPos = Vector( 0,64,0);
 
+float deltaTime = 0;
+int elapsedTimeLastFrame = 0;
+
 //Terrain
 Terrain terrain(CHUNKS_COUNT);
 Camera g_Camera;
+Ball ball(2);
 
 int g_MouseButton = 0;
 int g_MouseState = 0;
@@ -61,6 +65,7 @@ int main(int argc, char * argv[]) {
 
 	terrain.loadShaders("Shader/vertexshader.glsl", "Shader/dumb_shader.glsl");
 	terrain.initChunks();
+	ball.load("Ressourcen/ball.obj", Vector(0, 0.5, 0));
 
     glutMainLoop();
 }
@@ -164,6 +169,9 @@ void SpecialKeyboardCallback(int key, int x, int y) {
 	terrain.setTerrainCenter(offsetX, offsetY);
 }
 void DrawScene() {
+	deltaTime = (glutGet(GLUT_ELAPSED_TIME) - elapsedTimeLastFrame) / 1000.0f;
+	elapsedTimeLastFrame = glutGet(GLUT_ELAPSED_TIME);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
@@ -177,6 +185,8 @@ void DrawScene() {
 	
 	terrain.draw();
 	terrain.drawBoundingBox();
+	ball.draw(deltaTime);
+	ball.drawAxis();
 
     glutSwapBuffers();
     glutPostRedisplay();

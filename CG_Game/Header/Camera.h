@@ -9,8 +9,11 @@
 #ifndef __RealtimeRending__Camera__
 #define __RealtimeRending__Camera__
 
+#define _USE_MATH_DEFINES
 #include <iostream>
+#include <cmath>
 
+#include "Matrix.h"
 #include "vector.h"
 
 extern const unsigned int g_WindowWidth;
@@ -40,7 +43,8 @@ protected:
     Vector getVSpherePos( float x, float y);
     Vector rotateAxisAngle( Vector v, Vector n, float a);
     
-    
+	Matrix m_ViewMatrix;
+	Matrix m_ProjMatrix;
     Vector m_Position;
     Vector m_Target;
     Vector m_Up;

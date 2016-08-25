@@ -15,12 +15,12 @@
 #include <GL/GLUT.h>
 #include <GL/GL.h>
 
-#include "GameObject.h"
 #include "vector.h"
 #include "texture.h"
 #include "RGBImage.h"
 #include "PerlinNoise.h"
 #include "GLError.h"
+#include "GameObject.h"
 
 #define CHUNKSIZE 80
 

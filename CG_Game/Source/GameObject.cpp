@@ -26,7 +26,7 @@ GameObject::~GameObject()
 {
 }
 
-BoundingBox GameObject::getBoundingBox() {
+const BoundingBox& GameObject::getBoundingBox() const{
 	return m_BoundingBox;
 }
 

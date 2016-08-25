@@ -23,6 +23,11 @@ public:
     
     float dot(const Vector& v) const;
     Vector cross(const Vector& v) const;
+	Vector rotationX(int degree) const;
+	Vector rotationY(int degree) const;
+	Vector rotationZ(int degree) const;
+	bool operator==(const Vector& v) const;
+	bool operator!=(const Vector& v) const;
     Vector operator+(const Vector& v) const;
     Vector operator-(const Vector& v) const;
     Vector& operator+=(const Vector& v) ;
