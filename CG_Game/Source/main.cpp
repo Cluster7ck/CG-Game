@@ -70,7 +70,8 @@ int main(int argc, char * argv[]) {
 	terrain.loadShaders("Shader/vertexshader.glsl", "Shader/dumb_shader.glsl");
 	terrain.initChunks();
 	ball.load("Ressourcen/ball.obj", Vector(0, 0.5, 0));
-
+	ball.g_Model_ball.loadShaders("Shader/vertexshader.glsl", "Shader/blinn_phong_fragmentshader.glsl");
+	ball.g_Model_ball.setUseShader(true);
     glutMainLoop();
 }
 

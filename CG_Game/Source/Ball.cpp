@@ -85,11 +85,14 @@ void Ball::update(float DeltaTime) {
 }
 
 void Ball::draw(float DeltaTime) {
+	/*
 	glPushMatrix();
 	glMultMatrixf(m_Ball);
 	g_Model_ball.draw();
 	glPopMatrix();
 	drawAxis();
+	*/
+	g_Model_ball.drawBuffer();
 }
 
 void Ball::drawAxis() {
