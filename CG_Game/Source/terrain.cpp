@@ -84,10 +84,10 @@ void Terrain::draw() {
 				}
 			}
 			else{
-				static int bla = 0;
+				/*static int bla = 0;
 				bla++;
 				std::cout<< "Num : "<< bla << " <<<<< Offx " << tempOffset.offsetX << " OffY " << tempOffset.offsetY << std::endl;
-
+				*/
 				std::thread thread1(&Terrain::createChunkThread, this,tempOffset);
 				thread1.detach();
 			}

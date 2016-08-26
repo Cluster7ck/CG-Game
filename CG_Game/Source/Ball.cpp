@@ -73,13 +73,13 @@ void Ball::update(float DeltaTime) {
 	m_Ball.m03 = newPos.X;
 	m_Ball.m13 = newPos.Y;
 	m_Ball.m23 = newPos.Z;
-
+	/*
 	if (accumulatedTime >= 2) {
 		std::cout << "\nX: " << m_Ball.translation().X << " Y: " << terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5 << " Z: " << m_Ball.translation().Z<< std::endl;
 		std::cout << "Vel.X: " << velocity.X << " Vel.Z: " << velocity.Z << std::endl;
 		accumulatedTime = 0;
 	}
-
+	*/
 	draw(DeltaTime);
 	
 }

@@ -30,9 +30,6 @@
     <ClInclude Include="Header\PerlinNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header\PlaneModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Header\rgbimage.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -154,7 +154,6 @@
     <ClInclude Include="Header\Matrix.h" />
     <ClInclude Include="Header\Model.h" />
     <ClInclude Include="Header\PerlinNoise.h" />
-    <ClInclude Include="Header\PlaneModel.h" />
     <ClInclude Include="Header\rgbimage.h" />
     <ClInclude Include="Header\shaderprogram.h" />
     <ClInclude Include="Header\Terrain.h" />

@@ -32,7 +32,7 @@ float deltaTime = 0;
 int elapsedTimeLastFrame = 0;
 
 //Terrain
-PerlinNoise noise(0.5, 0.042, 10, 1, 1400);
+PerlinNoise noise(0.5, 0.042, 40, 1, 1400);
 Terrain terrain(CHUNKS_COUNT, noise);
 Camera g_Camera;
 Ball ball(0.8,noise);
@@ -228,10 +228,15 @@ void DrawScene() {
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 	
-	terrain.draw();
-	terrain.drawBoundingBox();
 	ball.update(deltaTime);
 	ball.drawAxis();
+	//Ball Coordiantes to terrain offset. switches when at center
+	float offsetX = ball.m_Ball.translation().X >= 0 ?  floor(ball.m_Ball.translation().X / (CHUNKSIZE - 1)) : ceil(ball.m_Ball.translation().X / (CHUNKSIZE - 1));
+	float offsetZ = ball.m_Ball.translation().Z >= 0 ? floor(ball.m_Ball.translation().Z / (CHUNKSIZE - 1)) : ceil(ball.m_Ball.translation().Z / (CHUNKSIZE - 1));
+	terrain.setTerrainCenter(offsetX, offsetZ);
+	terrain.draw();
+	terrain.drawBoundingBox();
+
 
     glutSwapBuffers();
     glutPostRedisplay();
