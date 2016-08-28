@@ -33,12 +33,19 @@ public:
     void setTarget( const Vector& Target);
     void setUp( const Vector& Up);
 
-    void mouseInput( int x, int y, int Button, int State);
+	void mouseInput(Matrix Object, int x, int y, int Button, int State);
+	void mouseWheelInput(int x, int y, int Button, int Dir);
+
+	const Matrix& getViewMatrix() const;
+	const Matrix& getProjectionMatrix() const;
+	int getWindowWidth();
+	int getWindowHeight();
     
     void apply();
 protected:
     void pan( float dx, float dy);
     void zoom( float dz);
+	void rotateAroundObject(Matrix Object, float x, float y);
     void rotate( float x, float y );
     Vector getVSpherePos( float x, float y);
     Vector rotateAxisAngle( Vector v, Vector n, float a);

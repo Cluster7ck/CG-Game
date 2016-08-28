@@ -36,6 +36,16 @@ void Ball::update(float DeltaTime) {
 	static float accumulatedTime = 0;
 	accumulatedTime += DeltaTime;
 
+	Vector camDirStraight = m_Ball.translation() - g_Camera.getPosition();
+	Vector camDirSide = (m_Ball.translation() - g_Camera.getPosition()).rotationY(90);
+	Vector moveDirection = (camDirStraight * straight * DeltaTime) + (camDirSide * side * DeltaTime);
+
+	//shorten vector if diagonal
+	if (straight != 0 && side != 0) {
+		moveDirection = moveDirection * 0.7f * DeltaTime;
+	}
+
+	//reduce speed
 	if (velocity.Z > 0) {
 		velocity.Z -= 0.7 * DeltaTime;
 		velocity.Z = (velocity.Z < 0) ? 0 : velocity.Z;
@@ -53,7 +63,9 @@ void Ball::update(float DeltaTime) {
 		velocity.X += 0.7 * DeltaTime;
 		velocity.X = (velocity.X > 0) ? 0 : velocity.X;
 	}
-
+	Vector rotationAxisStraight(camDirSide.X, 0, camDirSide.Z);
+	Vector rotationAxisSide(camDirStraight.X, 0, camDirStraight.Z);
+	
 	velocity.X = clamp(velocity.X, -0.025, 0.025);
 	velocity.Z = clamp(velocity.Z, -0.025, 0.025);
 
@@ -62,13 +74,14 @@ void Ball::update(float DeltaTime) {
 
 	Vector newPos(m_Ball.translation().X + velocity.X, terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5, m_Ball.translation().Z + velocity.Z);
 
-	rotX.rotationAxis(Vector(1, 0, 0), 0.5* M_PI * straight * DeltaTime * abs(velocity.Z) * 100);
+	//rotX.rotationAxis(rotationAxisStraight, 0.5* M_PI * straight * DeltaTime * abs(velocity.Z) * 100);
+	//rotZ.rotationAxis(rotationAxisSide, 0.5* M_PI * side * DeltaTime * abs(velocity.X) * 100);
+	rotX.rotationAxis(Vector(1,0,0), 0.5* M_PI * straight * DeltaTime * abs(velocity.Z) * 100);
 	rotZ.rotationAxis(Vector(0, 0, 1), 0.5* M_PI * side * DeltaTime * abs(velocity.X) * 100);
 
 	m_Rotation = (rotX*rotZ);
-		
-	m_Ball = (m_Ball.invert() * m_Rotation).invert();
-
+	transM.translation(velocity.X, 0, velocity.Z);
+	m_Ball = ( m_Ball.invert() * m_Rotation).invert();
 	
 	m_Ball.m03 = newPos.X;
 	m_Ball.m13 = newPos.Y;
@@ -80,19 +93,24 @@ void Ball::update(float DeltaTime) {
 		accumulatedTime = 0;
 	}
 	*/
+	Matrix w = m_Ball;
+	g_Camera.setTarget(w.invert().translation());
+	g_Camera.setPosition(g_Camera.getPosition());
+	g_Camera.apply();
+	
 	draw(DeltaTime);
 	
 }
 
 void Ball::draw(float DeltaTime) {
-	/*
+	
 	glPushMatrix();
 	glMultMatrixf(m_Ball);
 	g_Model_ball.draw();
 	glPopMatrix();
 	drawAxis();
-	*/
-	g_Model_ball.drawBuffer();
+	
+	//g_Model_ball.drawBuffer();
 }
 
 void Ball::drawAxis() {

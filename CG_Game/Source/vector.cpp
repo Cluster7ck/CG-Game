@@ -8,6 +8,9 @@
 
 #include "../Header/vector.h"
 
+float sinus(int degree);
+float cosinus(int degree);
+
 Vector::Vector(float x, float y, float z) {
     X = x;
     Y = y;
@@ -144,8 +147,8 @@ bool Vector::triangleIntersection(const Vector& d, const Vector& a, const Vector
     
 	return false;
 }
-/*
-float Vector::cosinus(int degree) const {
+
+float cosinus(int degree){
 	float radian = degree * M_PI / 180.0f;
 	float cosinus = cos(radian);
 
@@ -156,7 +159,7 @@ float Vector::cosinus(int degree) const {
 	return cosinus;
 }
 
-float Vector::sinus(int degree) const {
+float sinus(int degree){
 	float radian = degree * M_PI / 180.0f;
 	float sinus = sin(radian);
 
@@ -166,13 +169,13 @@ float Vector::sinus(int degree) const {
 
 	return sinus;
 }
-*/
+
 Vector Vector::rotationX(int degree) const {
 	Vector nv;
 
 	nv.X = this->X;
-	nv.Y = (cos(degree) * this->Y) + (-sin(degree) * this->Z);
-	nv.Z = (sin(degree) * this->Y) + (cos(degree) * this->Z);
+	nv.Y = (cosinus(degree) * this->Y) + (-sinus(degree) * this->Z);
+	nv.Z = (sinus(degree) * this->Y) + (cosinus(degree) * this->Z);
 
 	return nv;
 }
@@ -180,9 +183,9 @@ Vector Vector::rotationX(int degree) const {
 Vector Vector::rotationY(int degree) const {
 	Vector nv;
 
-	nv.X = (cos(degree) * this->X) + (-sin(degree) * this->Z);
+	nv.X = (cosinus(degree) * this->X) + (-sinus(degree) * this->Z);
 	nv.Y = this->Y;
-	nv.Z = (sin(degree) * this->X) + (cos(degree) * this->Z);
+	nv.Z = (sinus(degree) * this->X) + (cosinus(degree) * this->Z);
 
 	return nv;
 }
@@ -190,8 +193,8 @@ Vector Vector::rotationY(int degree) const {
 Vector Vector::rotationZ(int degree) const {
 	Vector nv;
 
-	nv.X = (cos(degree) * this->X) + (-sin(degree) * this->Y);
-	nv.Y = (sin(degree) * this->X) + (cos(degree) * this->Y);
+	nv.X = (cosinus(degree) * this->X) + (-sinus(degree) * this->Y);
+	nv.Y = (sinus(degree) * this->X) + (cosinus(degree) * this->Y);
 	nv.Z = this->Z;
 
 	return nv;

@@ -28,12 +28,8 @@ Model::~Model() {
 }
 
 bool Model::load(const char* Filename, bool FitSize) {
-	// Blatt 3 Aufgabe 1
-	//createCube();		
-
-	// Blatt 3 Aufgabe 2
-	//createObject(Filename, FitSize);
-	createBufferObject(Filename, FitSize);
+	createObject(Filename, FitSize);
+	//createBufferObject(Filename, FitSize);
     return true;
 }
 

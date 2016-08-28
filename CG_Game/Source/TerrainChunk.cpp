@@ -67,10 +67,11 @@ bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, floa
 			m_BoundingBox.Max.Z = vertex.Z;
 		}
 	}
-
+	/*
 	std::cout << std::endl << "\nBBox X -> Min: " << m_BoundingBox.Min.X << " Max: " << m_BoundingBox.Max.X << " Dist: " << m_BoundingBox.Max.X - m_BoundingBox.Min.X << std::endl;
 	std::cout << "BBox Y -> Min: " << m_BoundingBox.Min.Y << " Max: " << m_BoundingBox.Max.Y << " Dist: " << m_BoundingBox.Max.Y - m_BoundingBox.Min.Y << std::endl;
 	std::cout << "BBox Z -> Min: " << m_BoundingBox.Min.Z << " Max: " << m_BoundingBox.Max.Z << " Dist: " << m_BoundingBox.Max.Z - m_BoundingBox.Min.Z << std::endl;
+	*/
 	std::cout << "Chunk offX: " << OffsetX << " offY: " << OffsetY << std::endl;
 	// Indices
 	indicesCount = (CHUNKSIZE * CHUNKSIZE) * 6;

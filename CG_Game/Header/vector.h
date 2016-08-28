@@ -9,6 +9,7 @@
 #ifndef vector_h
 #define vector_h
 
+#define _USE_MATH_DEFINES
 #include <stdio.h>
 #include <cmath> 
 

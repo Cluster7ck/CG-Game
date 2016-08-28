@@ -26,6 +26,7 @@ Camera::Camera(Vector& Pos, Vector& Target, Vector& Up)
     m_Up = Up;
     m_Position = Pos;
     m_Target = Target;
+	m_ProjMatrix.perspective(M_PI*65.0f / 180.0f, (double)g_WindowWidth / (double)g_WindowHeight, 0.045, 1000.0f);
 }
 
 Vector Camera::getPosition()
@@ -41,43 +42,44 @@ Vector Camera::getUp()
     return m_Up;
 }
 
+int Camera::getWindowWidth() {
+	return g_WindowWidth;
+}
+
+int Camera::getWindowHeight() {
+	return g_WindowHeight;
+}
+
 void Camera::setPosition( const Vector& Pos)
 {
     m_Position = Pos;
     m_Panning = m_Rotation = m_Zoom = Vector(0,0,0);
-
-
 }
+
 void Camera::setTarget( const Vector& Target)
 {
     m_Target = Target;
     m_Panning = Vector(0,0,0);
 }
+
 void Camera::setUp( const Vector& Up)
 {
     m_Up = Up;
 }
 
-void Camera::mouseInput( int x, int y, int Button, int State)
+void Camera::mouseInput(Matrix Object, int x, int y, int Button, int State)
 {
     if(State == GLUT_DOWN)
     {
-        if(m_LastMouseX==-1) m_LastMouseX = x;
-        if(m_LastMouseY==-1) m_LastMouseY = y;
-        
-        if( Button == GLUT_LEFT_BUTTON )
-        {
-            rotate((float)x, (float)y );
-        }
-        else if( Button == GLUT_RIGHT_BUTTON)
-        {
-            pan( (float)(m_LastMouseX-x)*0.01f, (float)(m_LastMouseY-y)*0.01f );
-        }
-        else if( Button == GLUT_MIDDLE_BUTTON)
-        {
-            zoom( (float)(m_LastMouseY-y)*0.01f );
-            
-        }
+		if (m_LastMouseX == -1) m_LastMouseX = x;
+		if (m_LastMouseY == -1) m_LastMouseY = y;
+
+		if (Button == GLUT_LEFT_BUTTON) {
+			rotateAroundObject(Object, (float)x, (float)y);
+		}
+		else if (Button == GLUT_RIGHT_BUTTON) {
+			rotate((float)x, (float)y);
+		}
     }
     else
     {
@@ -92,6 +94,78 @@ void Camera::mouseInput( int x, int y, int Button, int State)
     }
 }
 
+void Camera::mouseWheelInput(int x, int y, int Button, int Dir) {
+	if (Dir > 0) {
+		zoom((float)(m_LastMouseY + y)*0.001f);
+	}
+	else {
+		zoom((float)(m_LastMouseY - y)*0.001f);
+	}
+}
+
+void Camera::zoom(float dz) {
+	Vector aDir = m_Target - m_Position;
+	float Dist = aDir.length();
+	aDir.normalize();
+
+	if (Dist - dz <= 1.0f) {
+		m_Zoom = aDir * (Dist - 1.0f);
+		return;
+	}
+	else if (Dist - dz >= 8.0f) {
+		m_Zoom = aDir * (Dist - 8.0f);
+		return;
+	}
+	m_Zoom = aDir * dz;
+}
+/*
+void Camera::zoom(float dz)
+{
+	Vector aDir = m_Target - m_Position;
+	float Dist = aDir.length();
+	aDir.normalize();
+
+	if (Dist - dz <= 1.0f)
+	{
+		m_Zoom = aDir * (Dist - 1.0f);
+		return;
+	}
+
+	m_Zoom = aDir * dz;
+}
+*/
+void Camera::rotateAroundObject(Matrix Object, float x, float y) {
+	Vector po = getVSpherePos((float)m_LastMouseX, m_LastMouseY);
+	Vector pn = getVSpherePos(x, y);
+
+	float difference = pn.X - po.X;
+	int angle = 0;
+
+	if (difference > 0.0f) {
+		//links rotieren
+		angle = 1;
+	}
+	else if (difference < 0.0f) {
+		//rechts rotieren
+		angle = -1;
+	}
+
+	Vector oldDirection = Object.translation() - getPosition();
+	Vector newDirection = (getPosition() - Object.translation()).rotationY(angle);
+
+	Matrix mt1, mt2;
+	mt1.translation((oldDirection).X, 0, (oldDirection).Z);
+	mt2.translation((newDirection).X, 0, (newDirection).Z);
+
+	setPosition(mt1 * mt2 * getPosition());
+	setTarget(getTarget().rotationY(angle));
+
+	apply();
+
+	m_LastMouseX = x;
+	m_LastMouseY = y;
+}
+
 void Camera::pan( float dx, float dy)
 {
     // calculate panning-plane
@@ -102,21 +176,6 @@ void Camera::pan( float dx, float dy)
     aRight.normalize();
     Vector aUp = aDir.cross(aRight);
     m_Panning = aRight * dx + aUp * dy;
-}
-
-void Camera::zoom( float dz)
-{
-    Vector aDir = m_Target-m_Position;
-    float Dist = aDir.length();
-    aDir.normalize();
-  
-    if( Dist-dz <= 1.0f)
-    {
-        m_Zoom = aDir * (Dist-1.0f);
-        return;
-    }
-    
-     m_Zoom = aDir * dz;
 }
 
 void Camera::rotate( float x, float y )
@@ -171,6 +230,13 @@ Vector Camera::rotateAxisAngle( Vector v, Vector n, float a)
     return o;
 }
 
+const Matrix& Camera::getViewMatrix() const {
+	return m_ViewMatrix;
+}
+
+const Matrix& Camera::getProjectionMatrix() const {
+	return m_ProjMatrix;
+}
 
 Vector Camera::getVSpherePos( float x, float y)
 {

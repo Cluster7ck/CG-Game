@@ -13,6 +13,7 @@
 #include <GL/glew.h>
 #include <GL/GLUT.h>
 #include <GL/GL.h>
+#include <GL/freeglut_ext.h>
 
 #include "../Header/Camera.h"
 #include "../Header/texture.h"
@@ -36,15 +37,18 @@ PerlinNoise noise(0.5, 0.042, 40, 1, 1400);
 Terrain terrain(CHUNKS_COUNT, noise);
 Camera g_Camera;
 Ball ball(0.8,noise);
+
 float keyStore[4];
 
 int g_MouseButton = 0;
 int g_MouseState = 0;
+int g_MouseDir = 0;
 
 void SetupDefaultGLSettings();
 void DrawScene();
 void MouseCallback(int Button, int State, int x, int y);
 void MouseMoveCallback(int x, int y);
+void mouseWheel(int, int, int, int);
 void KeyboardCallback( unsigned char key, int x, int y);
 void KeyboardUpCallback(unsigned char key, int x, int y);
 void SpecialKeyboardCallback(int key, int x, int y);
@@ -54,14 +58,14 @@ int main(int argc, char * argv[]) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutCreateWindow("CG Praktikum");
-	#ifdef WIN32
-		glewInit();
-	#endif
+	
+	glewInit();
     
     SetupDefaultGLSettings();
     
     glutDisplayFunc(DrawScene);
-    glutMouseFunc(MouseCallback);
+	glutMouseFunc(MouseCallback);
+	glutMouseWheelFunc(mouseWheel);
     glutKeyboardFunc(KeyboardCallback);
 	glutKeyboardUpFunc(KeyboardUpCallback);
     glutMotionFunc(MouseMoveCallback);
@@ -134,13 +138,19 @@ void DrawGroundGrid() {
 }
 
 void MouseCallback(int Button, int State, int x, int y) {
-    g_MouseButton = Button;
-    g_MouseState = State;
-    g_Camera.mouseInput(x,y,Button,State);
+	g_MouseButton = Button;
+	g_MouseState = State;
+	g_Camera.mouseInput(ball.m_Ball, x, y, Button, State);
 }
 
-void MouseMoveCallback( int x, int y) {
-    g_Camera.mouseInput(x,y,g_MouseButton,g_MouseState);
+void MouseMoveCallback(int x, int y) {
+	g_Camera.mouseInput(ball.m_Ball, x, y, g_MouseButton, g_MouseState);
+}
+
+void mouseWheel(int Button, int Dir, int x, int y) {
+	g_MouseButton = Button;
+	g_MouseDir = Dir;
+	g_Camera.mouseWheelInput(x, y, Button, Dir);
 }
  
 void KeyboardCallback(unsigned char key, int x, int y) {
