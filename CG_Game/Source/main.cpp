@@ -36,7 +36,7 @@ int elapsedTimeLastFrame = 0;
 PerlinNoise noise(0.5, 0.042, 40, 1, 1400);
 Terrain terrain(CHUNKS_COUNT, noise);
 Camera g_Camera;
-Ball ball(15,noise);
+Ball ball(2,noise);
 
 float keyStore[4];
 
@@ -194,7 +194,7 @@ void KeyboardUpCallback(unsigned char key, int x, int y) {
 		x = y = 0;
 		break;
 	}
-	ball.steer(keyStore[0] + keyStore[1], keyStore[2] + keyStore[3]);
+	//ball.steer(keyStore[0] + keyStore[1], keyStore[2] + keyStore[3]);
 }
 
 void SpecialKeyboardCallback(int key, int x, int y) {

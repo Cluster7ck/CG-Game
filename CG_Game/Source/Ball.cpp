@@ -11,7 +11,6 @@ float clamp(float n, float lower, float upper);
 Ball::Ball(float speed, PerlinNoise terrainNoise) {
 	this->speed = speed;
 	this->terrainNoise = terrainNoise;
-	velocity = Vector(0, 0, 0);
 }
 
 Ball::~Ball() {
@@ -28,6 +27,8 @@ bool Ball::load(const char* BallModel, const Vector& StartPos) {
 void Ball::steer(float ForwardBackward, float LeftRight) {
 	this->straight = ForwardBackward;
 	this->side = LeftRight;
+	sideForce = 1;
+	straightForce = 1;
 }
 
 void Ball::update(float DeltaTime) {
@@ -35,67 +36,36 @@ void Ball::update(float DeltaTime) {
 	Matrix transM, rotX, rotZ;
 	static float accumulatedTime = 0;
 	accumulatedTime += DeltaTime;
+	straightForce -= DeltaTime * 0.5;
+	sideForce -= DeltaTime * 0.5;
+	straightForce = straightForce < 0 ? 0 : straightForce;
+	sideForce = sideForce < 0 ? 0 : sideForce;
 
 	Vector camDirStraight = m_Ball.translation() - g_Camera.getPosition();
 	Vector camDirSide = (m_Ball.translation() - g_Camera.getPosition()).rotationY(90);
-	Vector moveVector = (camDirStraight * straight) + (camDirSide * side);
-	
-	if (moveVector != Vector(0, 0, 0))
-		moveVector.normalize();
-
-	//moveVector.X += speed * side * DeltaTime;
-	//moveVector.Z += speed * -straight * DeltaTime;
+	Vector moveVector = (camDirStraight * straight * straightForce) + (camDirSide * side * sideForce);
+	Vector forwardVector = camDirStraight * straight * straightForce;
+	Vector sideVector = (camDirSide * side * sideForce);
 
 	//shorten vector if diagonal
 	if (straight != 0 && side != 0) {
 		moveVector = moveVector * speed * DeltaTime * 0.7f;
 	}
 	else {
-		moveVector = moveVector * speed * DeltaTime;
+		moveVector = moveVector * speed  * DeltaTime;
 	}
 
-	/*/
-	//reduce speed
-	if (velocity.Z > 0) {
-		velocity.Z -= 0.7 * DeltaTime;
-		velocity.Z = (velocity.Z < 0) ? 0 : velocity.Z;
-	}
-	if(velocity.Z < 0) {
-		velocity.Z += 0.7 * DeltaTime;
-		velocity.Z = (velocity.Z > 0) ? 0 : velocity.Z;
-	}
-
-	if (velocity.X > 0) {
-		velocity.X -= 0.7 * DeltaTime;
-		velocity.X = (velocity.X < 0)? 0 : velocity.X;
-	}
-	if(velocity.X < 0) {
-		velocity.X += 0.7 * DeltaTime;
-		velocity.X = (velocity.X > 0) ? 0 : velocity.X;
-	}
-	velocity.X = clamp(velocity.X, -0.025, 0.025);
-	velocity.Z = clamp(velocity.Z, -0.025, 0.025);
-
-	velocity.X += speed * side * DeltaTime;
-	velocity.Z += speed * -straight * DeltaTime;
-
-	Vector camDirStraightZeroY = Vector(camDirStraight.X, 0, camDirStraight.Z);
-	Vector velForAngle = velocity;
-	if (velocity != Vector(0, 0, 0)) {
-	float angleForwardCamStraight = acos(camDirStraightZeroY.normalize().dot(velForAngle.normalize()));
-	velocity = velocity.rotationY(angleForwardCamStraight * 180 / M_PI);
-	}
-	*/
 	Vector rotationAxisStraight(camDirSide.X, 0, camDirSide.Z);
 	Vector rotationAxisSide(camDirStraight.X, 0, camDirStraight.Z);
 
 	float deltaY = terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5 - m_Ball.translation().Y;
 	Vector newPos(m_Ball.translation().X + moveVector.X, terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5, m_Ball.translation().Z + moveVector.Z);
 
-	rotX.rotationAxis(rotationAxisStraight, 0.5* M_PI * straight * DeltaTime * abs(moveVector.Z) * 100);
-	rotZ.rotationAxis(rotationAxisSide, 0.5* M_PI * -side * DeltaTime * abs(moveVector.X) * 100);
-	//rotX.rotationAxis(Vector(1,0,0), 0.5* M_PI * straight * DeltaTime * abs(velocity.Z) * 100);
-	//rotZ.rotationAxis(Vector(0, 0, 1), 0.5* M_PI * side * DeltaTime * abs(velocity.X) * 100);
+	//(-x^2+1)*3 as rotation speed decline function
+	float rotationFactorStraight = 3 - 3 * pow(1-straightForce, 2);
+	float rotationFactorSide = 3 - 3 *pow(1 - sideForce, 2);
+	rotX.rotationAxis(rotationAxisStraight, 0.5* M_PI  * straight * DeltaTime * rotationFactorStraight);
+	rotZ.rotationAxis(rotationAxisSide, 0.5* M_PI * -side * DeltaTime * rotationFactorSide);
 
 	//Transformation
 	m_Rotation = (rotX*rotZ);
@@ -108,7 +78,7 @@ void Ball::update(float DeltaTime) {
 	
 	if (accumulatedTime >= 2) {
 		//std::cout << "\nX: " << m_Ball.translation().X << " Y: " << terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5 << " Z: " << m_Ball.translation().Z<< std::endl;
-		std::cout << "Vel.X: " << moveVector.X << " Vel.Z: " << moveVector.Z << std::endl;
+		std::cout << "Vel.X: " << moveVector.X << " Vel.Z: " << moveVector.Z << " length Forward: "<< rotationFactorStraight << std::endl;
 		accumulatedTime = 0;
 	}
 	
@@ -159,18 +129,11 @@ void Ball::drawAxis() {
 	temp = (m_Ball.translation() + m_Ball.forward() * 2);
 	glVertex3f(m_Ball.translation().X, m_Ball.translation().Y, m_Ball.translation().Z);
 	glVertex3f(temp.X, temp.Y, temp.Z);
-
-
+	
 	glColor3f(0, 1.0, 1.0);
 	temp = (m_Ball.translation() + m_Ball.right()*2);
 	glVertex3f(m_Ball.translation().X, m_Ball.translation().Y, m_Ball.translation().Z);
 	glVertex3f(temp.X,temp.Y,temp.Z);
-
-	//velocity direction
-	glColor3f(1.0, 0.6, 0);//orange+
-	temp = (velocity * 2);
-	glVertex3f(m_Ball.translation().X, m_Ball.translation().Y, m_Ball.translation().Z);
-	glVertex3f(m_Ball.translation().X + temp.X, m_Ball.translation().Y, m_Ball.translation().Z + temp.Z);
 
 	glEnd();
 	glEnable(GL_LIGHTING);

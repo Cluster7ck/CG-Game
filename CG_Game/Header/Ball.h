@@ -41,7 +41,8 @@ public:
 	void draw(float DeltaTime);
 	void drawAxis();
 private:
-	Vector velocity;
+	float straightForce;
+	float sideForce;
 	PerlinNoise terrainNoise;
 	float speed;
 	int rotationX;
