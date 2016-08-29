@@ -20,8 +20,14 @@ bool Ball::load(const char* BallModel, const Vector& StartPos) {
 	g_Model_ball.load(BallModel, false);
 	this->aimTarget = Vector(0, 0, 0);
 	m_Ball.translation(StartPos);
+
+	g_Model_ball.m_BoundingBox.Min.X += StartPos.X;
+	g_Model_ball.m_BoundingBox.Max.X += StartPos.X;
 	g_Model_ball.m_BoundingBox.Min.Y += StartPos.Y;
 	g_Model_ball.m_BoundingBox.Max.Y += StartPos.Y;
+	g_Model_ball.m_BoundingBox.Min.Z += StartPos.Z;
+	g_Model_ball.m_BoundingBox.Max.Z += StartPos.Z;
+
 	return true;
 }
 

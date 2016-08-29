@@ -118,22 +118,7 @@ void Camera::zoom(float dz) {
 	}
 	m_Zoom = aDir * dz;
 }
-/*
-void Camera::zoom(float dz)
-{
-	Vector aDir = m_Target - m_Position;
-	float Dist = aDir.length();
-	aDir.normalize();
 
-	if (Dist - dz <= 1.0f)
-	{
-		m_Zoom = aDir * (Dist - 1.0f);
-		return;
-	}
-
-	m_Zoom = aDir * dz;
-}
-*/
 void Camera::rotateAroundObject(Matrix Object, float x, float y) {
 	Vector po = getVSpherePos((float)m_LastMouseX, m_LastMouseY);
 	Vector pn = getVSpherePos(x, y);
@@ -158,9 +143,6 @@ void Camera::rotateAroundObject(Matrix Object, float x, float y) {
 	mt2.translation((newDirection).X, 0, (newDirection).Z);
 
 	setPosition(mt1 * mt2 * getPosition());
-	setTarget(getTarget().rotationY(angle));
-
-	apply();
 
 	m_LastMouseX = x;
 	m_LastMouseY = y;

@@ -40,6 +40,7 @@ Ball ball(2,noise);
 
 float keyStore[4];
 
+int g_mouseInput = 0;
 int g_MouseButton = 0;
 int g_MouseState = 0;
 int g_MouseDir = 0;
@@ -237,7 +238,7 @@ void DrawScene() {
     glLoadIdentity();
     g_Camera.apply();
 
-	//DrawGroundGrid();
+	DrawGroundGrid();
     
     GLfloat lpos[4];
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
