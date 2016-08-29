@@ -18,7 +18,7 @@
 Camera::Camera() : m_Position(0.0f,15.0f,15.0f), m_Target(0.0f,0.0f,0.0f), m_Up(0.0f,1.0f,0.0f), m_LastMouseX(-1), m_LastMouseY(-1), m_Panning(0,0,0), m_Zoom(0,0,0), m_Rotation(0,0,0)
 {
 	m_ViewMatrix.identity();
-	m_ProjMatrix.perspective(M_PI*65.0f / 180.0f, (double) g_WindowWidth / (double) g_WindowHeight, 0.045, 1000.0f);
+	m_ProjMatrix.perspective(M_PI*65.0f / 180.0f, (double) g_WindowWidth / (double) g_WindowHeight, 0.045, 10.0f);
 }
 
 Camera::Camera(Vector& Pos, Vector& Target, Vector& Up)

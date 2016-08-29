@@ -234,20 +234,10 @@ bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, floa
 			Vertices[x * CHUNKSIZE + y].Normal = vertexNormal * -1;
 		}
 	}
-	/*
-	// create gpu buffer for vertices
-	glGenBuffers(1, &m_VertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(TerrainVertex) * (CHUNKSIZE * CHUNKSIZE), Vertices, GL_STATIC_DRAW);
-
-	// create gpu buffer for indices
-	glGenBuffers(1, &m_IndexBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indicesCount, Indices, GL_STATIC_DRAW);
-	*/
 	return true;
 }
 
+//OpenGL calls hard to do in thread...
 void TerrainChunk::bindBuffers() {
 	if (!isBound) {
 		glGenBuffers(1, &m_VertexBuffer);

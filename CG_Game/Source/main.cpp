@@ -36,7 +36,7 @@ int elapsedTimeLastFrame = 0;
 PerlinNoise noise(0.5, 0.042, 40, 1, 1400);
 Terrain terrain(CHUNKS_COUNT, noise);
 Camera g_Camera;
-Ball ball(0.8,noise);
+Ball ball(15,noise);
 
 float keyStore[4];
 
@@ -233,7 +233,7 @@ void DrawScene() {
     glLoadIdentity();
     g_Camera.apply();
 
-	DrawGroundGrid();
+	//DrawGroundGrid();
     
     GLfloat lpos[4];
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
