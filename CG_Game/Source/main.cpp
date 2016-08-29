@@ -152,6 +152,10 @@ void mouseWheel(int Button, int Dir, int x, int y) {
 	g_MouseDir = Dir;
 	g_Camera.mouseWheelInput(x, y, Button, Dir);
 }
+
+void MouseUpdate() {
+
+}
  
 void KeyboardCallback(unsigned char key, int x, int y) {
 	// function is called if a regular keyboard button is pressed
@@ -241,12 +245,14 @@ void DrawScene() {
 	
 	ball.update(deltaTime);
 	ball.drawAxis();
+	ball.g_Model_ball.drawBoundingBox();
 	//Ball Coordiantes to terrain offset. switches when at center
 	float offsetX = ball.m_Ball.translation().X >= 0 ?  floor(ball.m_Ball.translation().X / (CHUNKSIZE - 1)) : ceil(ball.m_Ball.translation().X / (CHUNKSIZE - 1));
 	float offsetZ = ball.m_Ball.translation().Z >= 0 ? floor(ball.m_Ball.translation().Z / (CHUNKSIZE - 1)) : ceil(ball.m_Ball.translation().Z / (CHUNKSIZE - 1));
 	terrain.setTerrainCenter(offsetX, offsetZ);
+
 	terrain.draw();
-	terrain.drawBoundingBox();
+	//terrain.drawBoundingBox();
 
 
     glutSwapBuffers();

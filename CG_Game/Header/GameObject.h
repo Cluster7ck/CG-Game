@@ -35,12 +35,14 @@ public:
 	virtual void draw() = 0;
 	void drawBoundingBox();
 	const BoundingBox& getBoundingBox() const;
+	void setBoundingBox(BoundingBox bBox);
 	ShaderProgram getShaderProgram();
 	void loadShaders(const char* VertexShader, const char* FragmentShader);
 	void setShaders(ShaderProgram shaderProgram);
+	BoundingBox m_BoundingBox;
 protected:
 	ShaderProgram m_ShaderProgram;
-	BoundingBox m_BoundingBox;
+	
 };
 
 #endif

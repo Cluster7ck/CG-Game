@@ -235,6 +235,31 @@ void Model::createObject(const char* Filename, bool FitSize) {
 		}
 	}
 
+	for (unsigned int i = 0; i < v.size(); i++) {
+		Vector vertex = v[i];
+
+		// Box kleiner
+		if (m_BoundingBox.Min.X > vertex.X) {
+			m_BoundingBox.Min.X = vertex.X;
+		}
+		if (m_BoundingBox.Min.Y > vertex.Y) {
+			m_BoundingBox.Min.Y = vertex.Y;
+		}
+		if (m_BoundingBox.Min.Z > vertex.Z) {
+			m_BoundingBox.Min.Z = vertex.Z;
+		}
+		// Box größer
+		if (m_BoundingBox.Max.X < vertex.X) {
+			m_BoundingBox.Max.X = vertex.X;
+		}
+		if (m_BoundingBox.Max.Y < vertex.Y) {
+			m_BoundingBox.Max.Y = vertex.Y;
+		}
+		if (m_BoundingBox.Max.Z < vertex.Z) {
+			m_BoundingBox.Max.Z = vertex.Z;
+		}
+	}
+
 	// Eckpunkte und Materialien zusammenstellen
 	unsigned int faceCount = (unsigned int)f.size();
 	m_pVertices = new Vertex[faceCount * 3];
@@ -497,6 +522,31 @@ void Model::createBufferObject(const char* Filename, bool FitSize) {
 		float scale = 7 / ((m_BoundingBox.Min - m_BoundingBox.Max).length() * 2);
 		for (unsigned int i = 0; i < v.size(); i++) {
 			v[i] = v[i] * scale;
+		}
+	}
+
+	for (unsigned int i = 0; i < v.size(); i++) {
+		Vector vertex = v[i];
+
+		// Box kleiner
+		if (m_BoundingBox.Min.X > vertex.X) {
+			m_BoundingBox.Min.X = vertex.X;
+		}
+		if (m_BoundingBox.Min.Y > vertex.Y) {
+			m_BoundingBox.Min.Y = vertex.Y;
+		}
+		if (m_BoundingBox.Min.Z > vertex.Z) {
+			m_BoundingBox.Min.Z = vertex.Z;
+		}
+		// Box größer
+		if (m_BoundingBox.Max.X < vertex.X) {
+			m_BoundingBox.Max.X = vertex.X;
+		}
+		if (m_BoundingBox.Max.Y < vertex.Y) {
+			m_BoundingBox.Max.Y = vertex.Y;
+		}
+		if (m_BoundingBox.Max.Z < vertex.Z) {
+			m_BoundingBox.Max.Z = vertex.Z;
 		}
 	}
 

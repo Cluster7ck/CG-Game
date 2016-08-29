@@ -1,0 +1,5 @@
+Camera jitter
+PickUps and collision
+Skybox
+Better textures
+Seam normals

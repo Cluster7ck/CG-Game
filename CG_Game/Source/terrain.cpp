@@ -80,7 +80,7 @@ void Terrain::draw() {
 				it->second.bindBuffers();
 				if ((x != 0 && x != chunksPerSide - 1 && y != 0 && y != chunksPerSide - 1)) {
 					it->second.draw();
-					it->second.drawBoundingBox();
+					//it->second.drawBoundingBox();
 				}
 			}
 			else{

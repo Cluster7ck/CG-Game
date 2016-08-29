@@ -30,6 +30,10 @@ const BoundingBox& GameObject::getBoundingBox() const{
 	return m_BoundingBox;
 }
 
+void GameObject::setBoundingBox(BoundingBox bBox) {
+	m_BoundingBox = bBox;
+}
+
 ShaderProgram GameObject::getShaderProgram() {
 	return m_ShaderProgram;
 }

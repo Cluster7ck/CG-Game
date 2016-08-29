@@ -33,6 +33,7 @@ public:
 								0.0f, 0.0f, 0.0f, 0.0f,
 								0.0f, 0.0f, 0.0f, 0.0f,
 								0.0f, 0.0f, 0.0f, 0.0f);
+	Matrix m_Translation;
 	Ball(float speed, PerlinNoise terrainNoise);
 	~Ball();
 	bool load(const char* BallModel, const Vector& StartPos);
@@ -40,7 +41,9 @@ public:
 	void update(float DeltaTime);
 	void draw(float DeltaTime);
 	void drawAxis();
+	void drawBoundingBox();
 private:
+	void recalculateBoundingBox();
 	float straightForce;
 	float sideForce;
 	PerlinNoise terrainNoise;
