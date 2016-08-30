@@ -35,6 +35,6 @@ void main(void) {
     DiffuseComponent *= DiffuseTexColor;
     vec3 AmbientComponent = AmbientColor * DiffuseTexColor;
 
-    //gl_FragColor = vec4(DiffuseComponent + SpecularComponent + AmbientComponent, 0);
-	gl_FragColor = vec4(1.0,1.0,0,0);
+    gl_FragColor = vec4(DiffuseComponent + SpecularComponent + AmbientComponent, 0);
+	//gl_FragColor = vec4(1.0,1.0,0,0);
 }

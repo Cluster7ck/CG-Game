@@ -41,9 +41,7 @@ public:
 	void drawBuffer();
 	void setUseShader(bool use);
 protected:
-    void createCube();
 	void createObject(const char* filename, bool fitSize);
-	void createBufferObject(const char* Filename, bool FitSize);
 	void createMaterials(const char* filename);
 	void replaceFilename(const char* Filename, const char* replacer, char* destination);
 	void setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp, float MinHeight, float MaxHeight);
