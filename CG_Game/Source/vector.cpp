@@ -148,28 +148,6 @@ bool Vector::triangleIntersection(const Vector& d, const Vector& a, const Vector
 	return false;
 }
 
-float cosinus(int degree){
-	float radian = degree * M_PI / 180.0f;
-	float cosinus = cos(radian);
-
-	if(degree == 90 || degree == -90) {
-		cosinus = 0.0f;
-	}
-
-	return cosinus;
-}
-
-float sinus(int degree){
-	float radian = degree * M_PI / 180.0f;
-	float sinus = sin(radian);
-
-	if(degree == 180 || degree == -180) {
-		sinus = 0.0f;
-	}
-
-	return sinus;
-}
-
 Vector Vector::rotationX(int degree) const {
 	Vector nv;
 

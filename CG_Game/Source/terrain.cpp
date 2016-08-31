@@ -1,5 +1,4 @@
 #include "..\Header\Terrain.h"
-float map(float s, float a1, float a2, float b1, float b2);
 
 Terrain::~Terrain() {
 }
@@ -32,6 +31,7 @@ void Terrain::initChunks() {
 	m_BoundingBox.Min.X = m_BoundingBox.Min.Y = m_BoundingBox.Min.Z = FLT_MAX;
 
 	typedef std::map<TerrainOffset, TerrainChunk>::iterator it;
+
 	for (it iterator = terrainMap.begin(); iterator != terrainMap.end(); iterator++) {
 		if (iterator->second.getBoundingBox().Min.Y < m_BoundingBox.Min.Y)
 			m_BoundingBox.Min.Y = iterator->second.getBoundingBox().Min.Y;
@@ -67,7 +67,7 @@ void Terrain::draw() {
 	TerrainChunk tempChunk;
 
 	m_ShaderProgram.activate();
-	setShaderUniforms(Vector(0, 64, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.1, 0.1, 0.1), Color(0.2, 0.2, 0.2), 1, m_BoundingBox.Min.Y, m_BoundingBox.Max.Y);
+	setShaderUniforms(Vector(0.0f, 64.0f, 0.0f), Color(1.0f, 1.0f, 1.0f), Color(1.0f, 1.0f, 1.0f), Color(0.1f, 0.1f, 0.1f), Color(0.2f, 0.2f, 0.2f), 1, m_BoundingBox.Min.Y, m_BoundingBox.Max.Y);
 
 	int sideSize = chunksPerSide;
 	for (int y = 0; y < chunksPerSide; y++) {
@@ -119,7 +119,3 @@ void Terrain::setTerrainCenter(int x, int y) {
 	currentCenter.offsetY = y;
 }
 
-float map(float s, float a1, float a2, float b1, float b2)
-{
-	return b1 + (s - a1)*(b2 - b1) / (a2 - a1);
-}

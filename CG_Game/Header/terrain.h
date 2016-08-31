@@ -5,7 +5,7 @@
 #include <thread>
 
 #include "TerrainChunk.h"
-
+#include "utility_len.h"
 #define CHUNKSIZE 80
 
 struct TerrainOffset {

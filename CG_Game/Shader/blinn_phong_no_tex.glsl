@@ -6,8 +6,6 @@ uniform vec3 SpecColor;
 uniform vec3 AmbientColor;
 uniform float SpecExp;
 
-uniform sampler2D DiffuseTexture;
-
 varying vec3 Normal;
 varying vec3 Position;
 varying vec2 Texcoord;
@@ -23,18 +21,11 @@ void main(void) {
     vec3 R = reflect(- L, N);
 
     vec3 DiffuseComponent = DiffColor * sat(dot(N, L));
-    
 
     //vec3 SpecularComponent = SpecColor * pow(sat(dot(E, R)), SpecExp);
 
     vec3 H = 0.5*(L + E);
     vec3 SpecularComponent = SpecColor * pow(sat(dot(H, N)), SpecExp);
 
-    vec3 DiffuseTexColor = texture2D(DiffuseTexture, Texcoord).rgb;
-    
-    DiffuseComponent *= DiffuseTexColor;
-    vec3 AmbientComponent = AmbientColor * DiffuseTexColor;
-
-    gl_FragColor = vec4(DiffuseComponent + SpecularComponent + AmbientComponent, 0);
-	//gl_FragColor = vec4(1.0,1.0,0,0);
+    gl_FragColor = vec4(DiffuseTexColor + SpecularComponent + AmbientColor, 0);
 }

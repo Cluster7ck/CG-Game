@@ -237,6 +237,23 @@ bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, floa
 	return true;
 }
 
+bool TerrainChunk::createObjects(Model* ModelArray, int ModelArraySize, int ObjectCount, float Variance, PerlinNoise Pn) {
+	int objCountDeviation = floor(ObjectCount * Variance);
+	srand(Pn.RandomSeed);
+	int floor = ObjectCount - objCountDeviation, ceiling = ObjectCount + objCountDeviation, range = (ceiling - floor);
+	ObjectCount = floor + int((range * rand()) / (RAND_MAX + 1.0));
+
+	for (int i = 0; i < ObjectCount; i++) {
+		float x, z, scale;
+		scale = 1 + (2 * rand()) / (RAND_MAX + 1.0);
+		x = m_BoundingBox.Min.X + ((m_BoundingBox.Max.X - m_BoundingBox.Min.X) * rand()) / (RAND_MAX + 1.0);
+		z = m_BoundingBox.Min.Z + ((m_BoundingBox.Max.Z - m_BoundingBox.Min.Z) * rand()) / (RAND_MAX + 1.0);
+
+
+	}
+
+	return true;
+}
 //OpenGL calls hard to do in thread...
 void TerrainChunk::bindBuffers() {
 	if (!isBound) {

@@ -10,6 +10,7 @@
 #define vector_h
 
 #define _USE_MATH_DEFINES
+#include "utility_len.h"
 #include <stdio.h>
 #include <cmath> 
 

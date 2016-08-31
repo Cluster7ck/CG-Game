@@ -10,6 +10,7 @@
 #define TerrainChunk_h
 
 #include <iostream>
+#include <random>
 #include <windows.h>
 #include <GL/glew.h>
 #include <GL/GLUT.h>
@@ -21,6 +22,7 @@
 #include "PerlinNoise.h"
 #include "GLError.h"
 #include "GameObject.h"
+#include "sceneNode.h"
 
 #define CHUNKSIZE 80
 
@@ -34,9 +36,11 @@ public:
 	TerrainChunk();
 	~TerrainChunk();
 	bool create(float Width, float Depth, float HeightMultiplier, float OffsetX, float OffsetY, PerlinNoise pn);
+	bool createObjects(Model* ModelArray, int ModelArraySize, int ObjectCount, float Variance, PerlinNoise Pn);
 	void bindBuffers();
 	void draw();
 protected:
+	SceneNode objects;
 	Vector position;
 	TerrainVertex* Vertices;
 	unsigned int *Indices;

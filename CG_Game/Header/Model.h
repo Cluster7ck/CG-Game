@@ -24,6 +24,8 @@
 #include <float.h>
 
 #include <iostream>
+
+#include "utility_len.h"
 #include "vector.h"
 #include "color.h"
 #include "Material.h"
@@ -43,8 +45,8 @@ public:
 protected:
 	void createObject(const char* filename, bool fitSize);
 	void createMaterials(const char* filename);
-	void replaceFilename(const char* Filename, const char* replacer, char* destination);
 	void setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp, float MinHeight, float MaxHeight);
+	
 	bool useShader;
     Material* m_pMaterials;
     unsigned int m_MaterialCount;

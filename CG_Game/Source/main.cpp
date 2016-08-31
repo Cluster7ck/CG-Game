@@ -21,6 +21,7 @@
 #include "../Header/Terrain.h"
 
 #define CHUNKS_COUNT 49
+#define PICKUP_COUNT 3
 
 // window x and y size
 const unsigned int g_WindowWidth=1400;
@@ -35,6 +36,7 @@ int elapsedTimeLastFrame = 0;
 //Terrain
 PerlinNoise noise(0.5, 0.042, 40, 1, 1400);
 Terrain terrain(CHUNKS_COUNT, noise);
+Model* pickups;
 Camera g_Camera;
 Ball ball(2,noise);
 
@@ -72,10 +74,12 @@ int main(int argc, char * argv[]) {
     glutMotionFunc(MouseMoveCallback);
 	glutSpecialFunc(SpecialKeyboardCallback);
 
+	
+
 	terrain.loadShaders("Shader/vertexshader.glsl", "Shader/dumb_shader.glsl");
 	terrain.initChunks();
-	ball.load("Ressourcen/ball.obj", Vector(0, 0.5, 0));
-	ball.g_Model_ball.loadShaders("Shader/vertexshader.glsl", "Shader/blinn_phong_fragmentshader.glsl");
+	ball.load("Ressourcen/rock.obj", Vector(0, 0.5, 0));
+	ball.g_Model_ball.loadShaders("Shader/vertexshader.glsl", "Shader/blinn_phong_no_tex.glsl");
 	ball.g_Model_ball.setUseShader(true);
     glutMainLoop();
 }

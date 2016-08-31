@@ -155,10 +155,13 @@
     <ClInclude Include="Header\Model.h" />
     <ClInclude Include="Header\PerlinNoise.h" />
     <ClInclude Include="Header\rgbimage.h" />
+    <ClInclude Include="Header\scene.h" />
+    <ClInclude Include="Header\sceneNode.h" />
     <ClInclude Include="Header\shaderprogram.h" />
     <ClInclude Include="Header\Terrain.h" />
     <ClInclude Include="Header\TerrainChunk.h" />
     <ClInclude Include="Header\Texture.h" />
+    <ClInclude Include="Header\utility_len.h" />
     <ClInclude Include="Header\vector.h" />
   </ItemGroup>
   <ItemGroup>
@@ -173,10 +176,13 @@
     <ClCompile Include="Source\Model.cpp" />
     <ClCompile Include="Source\PerlinNoise.cpp" />
     <ClCompile Include="Source\rgbimage.cpp" />
+    <ClCompile Include="Source\scene.cpp" />
+    <ClCompile Include="Source\sceneNode.cpp" />
     <ClCompile Include="Source\shaderprogram.cpp" />
     <ClCompile Include="Source\Terrain.cpp" />
     <ClCompile Include="Source\TerrainChunk.cpp" />
     <ClCompile Include="Source\Texture.cpp" />
+    <ClCompile Include="Source\utility_len.cpp" />
     <ClCompile Include="Source\vector.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

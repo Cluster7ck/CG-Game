@@ -309,43 +309,6 @@ void Model::createObject(const char* Filename, bool FitSize) {
 
 		vertexIndex += 3;
 	}
-	
-	/*
-	//Write vertices to indexbuffer
-	for (unsigned int i = 0; i < faceCount; i++) {
-		unsigned int PosIdx0 = f[i].pidx[0] - 1;
-		unsigned int PosIdx1 = f[i].pidx[1] - 1;
-		unsigned int PosIdx2 = f[i].pidx[2] - 1;
-
-		unsigned int TexIdx0 = f[i].tidx[0] - 1;
-		unsigned int TexIdx1 = f[i].tidx[1] - 1;
-		unsigned int TexIdx2 = f[i].tidx[2] - 1;
-
-		Vector a = m_pVertices[i * 3].Position = v[PosIdx0];
-		Vector b = m_pVertices[i * 3 + 1].Position = v[PosIdx1];
-		Vector c = m_pVertices[i * 3 + 2].Position = v[PosIdx2];
-
-		m_pVertices[i * 3].TexcoordS = vt[TexIdx0].s;
-		m_pVertices[i * 3 + 1].TexcoordS = vt[TexIdx1].s;
-		m_pVertices[i * 3 + 2].TexcoordS = vt[TexIdx2].s;
-
-		m_pVertices[i * 3].TexcoordT = vt[TexIdx0].t;
-		m_pVertices[i * 3 + 1].TexcoordT = vt[TexIdx1].t;
-		m_pVertices[i * 3 + 2].TexcoordT = vt[TexIdx2].t;
-		//break at i == 12272 xy same normal = (0,0,0)  "f 23745/23745 23746/23746 23747/23747 "
-		Vector normal = (b - a).cross(c - a);
-
-		if (normal.length() == 0) {
-			//std::cout << "fehlerfall" <<std::endl;
-			normal = Vector(1, 0, 0);
-		}
-		else {
-			normal.normalize();
-		}
-		m_pVertices[i * 3].Normal =
-			m_pVertices[i * 3 + 1].Normal =
-			m_pVertices[i * 3 + 2].Normal = normal;
-	}*/
 	fileStream.close();
 
 	glGenBuffers(1, &m_VertexBuffer);
@@ -486,8 +449,7 @@ void Model::draw(){
 	}
 }
 
-void Model::drawBuffer() {
-
+void Model::drawBuffer(){
 	m_ShaderProgram.activate();
 	setShaderUniforms(Vector(0, 64, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.1, 0.1, 0.1), Color(0.2, 0.2, 0.2), 1, m_BoundingBox.Min.Y, m_BoundingBox.Max.Y);
 
@@ -516,15 +478,6 @@ void Model::drawBuffer() {
 	glDisableClientState(GL_NORMAL_ARRAY);
 
 	m_ShaderProgram.deactivate();
-}
-
-void Model::replaceFilename(const char* Filename,const char* replacer,char* destination) {
-	char charPointer;
-	strcpy(destination, Filename);
-	//Last occurence of slash
-	char* backslashPointer = strrchr(destination, '/');
-	//copy material filename behind slash
-	strcpy(backslashPointer + 1, replacer);
 }
 
 void Model::setUseShader(bool useShader) {
@@ -559,8 +512,8 @@ void Model::setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("AmbientColor"), AmbientColor);
 	paraID = m_ShaderProgram.getParameterID("SpecExp");
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("SpecExp"), SpecExp);
-	paraID = m_ShaderProgram.getParameterID("MaxHeight");
-	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("MaxHeight"), MaxHeight);
-	paraID = m_ShaderProgram.getParameterID("MinHeight");
-	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("MinHeight"), MinHeight);
+	//paraID = m_ShaderProgram.getParameterID("MaxHeight");
+	//m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("MaxHeight"), MaxHeight);
+	//paraID = m_ShaderProgram.getParameterID("MinHeight");
+	//m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("MinHeight"), MinHeight);
 }
