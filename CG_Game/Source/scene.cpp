@@ -8,7 +8,6 @@
 
 #include "../Header/scene.h"
 
-void replaceFilename(const char* Filename, const char* replacer, char* destination);
 void traverseHierarchy(SceneNode* node);
 
 Scene::Scene() {
@@ -111,15 +110,6 @@ void Scene::draw(SceneNode *node) {
 	for (it = node->getChildren().begin(); it != node->getChildren().end(); ++it) {
 		this->draw(*it);
 	}
-}
-
-void replaceFilename(const char* Filename, const char* replacer, char* destination) {
-	char charPointer;
-	strcpy(destination, Filename);
-	//Last occurence of slash
-	char* backslashPointer = strrchr(destination, '/');
-	//copy material filename behind slash
-	strcpy(backslashPointer + 1, replacer);
 }
 
 void traverseHierarchy(SceneNode* node) {

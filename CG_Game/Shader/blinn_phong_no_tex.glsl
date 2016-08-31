@@ -27,5 +27,5 @@ void main(void) {
     vec3 H = 0.5*(L + E);
     vec3 SpecularComponent = SpecColor * pow(sat(dot(H, N)), SpecExp);
 
-    gl_FragColor = vec4(DiffuseTexColor + SpecularComponent + AmbientColor, 0);
+    gl_FragColor = vec4(DiffuseComponent + SpecularComponent + AmbientColor, 0);
 }

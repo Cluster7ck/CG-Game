@@ -83,12 +83,12 @@ void Ball::update(float DeltaTime) {
 	m_Ball.m03 = newPos.X;
 	m_Ball.m13 = newPos.Y;
 	m_Ball.m23 = newPos.Z;
-	/*
+	
 	if (accumulatedTime >= 2) {
 		//std::cout << "\nX: " << m_Ball.translation().X << " Y: " << terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5 << " Z: " << m_Ball.translation().Z<< std::endl;
-		std::cout << "Vel.X: " << moveVector.X << " Vel.Z: " << moveVector.Z << " length Forward: "<< rotationFactorStraight << std::endl;
+		std::cout << "Current x: "<< newPos.X << "Current y: " << newPos.Y << "Current z: " << newPos.Z << std::endl;
 		accumulatedTime = 0;
-	}*/
+	}
 	
 	//Camera transform
 	m_Translation.translation(moveVector.X, deltaY, moveVector.Z);

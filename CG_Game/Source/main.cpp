@@ -9,6 +9,8 @@
 
 #include <iostream>
 #include <math.h>
+#include <vector>
+#include <string>
 #include <windows.h>
 #include <GL/glew.h>
 #include <GL/GLUT.h>
@@ -21,7 +23,7 @@
 #include "../Header/Terrain.h"
 
 #define CHUNKS_COUNT 49
-#define PICKUP_COUNT 3
+#define PICKUP_COUNT 2
 
 // window x and y size
 const unsigned int g_WindowWidth=1400;
@@ -33,10 +35,12 @@ const Vector g_LightPos = Vector( 0,64,0);
 float deltaTime = 0;
 int elapsedTimeLastFrame = 0;
 
+char* models[PICKUP_COUNT] = { "Ressourcen/ball.obj","Ressourcen/rock.obj" };
 //Terrain
 PerlinNoise noise(0.5, 0.042, 40, 1, 1400);
+std::vector<Model> pickups;
 Terrain terrain(CHUNKS_COUNT, noise);
-Model* pickups;
+
 Camera g_Camera;
 Ball ball(2,noise);
 
@@ -74,11 +78,17 @@ int main(int argc, char * argv[]) {
     glutMotionFunc(MouseMoveCallback);
 	glutSpecialFunc(SpecialKeyboardCallback);
 
-	
-
+	for (int i = 0; i < PICKUP_COUNT; i++) {
+		pickups.push_back(Model());
+		pickups.at(i).load(models[i], true);
+		pickups.at(i).loadShaders("Shader/vertexshader.glsl", "Shader/blinn_phong_no_tex.glsl");
+		pickups.at(i).setUseShader(true);
+		//pickups-> .load(models[i], true);
+	}
+	terrain.setPickups(&pickups);
 	terrain.loadShaders("Shader/vertexshader.glsl", "Shader/dumb_shader.glsl");
 	terrain.initChunks();
-	ball.load("Ressourcen/rock.obj", Vector(0, 0.5, 0));
+	ball.load("Ressourcen/ball.obj", Vector(0, 0.5, 0));
 	ball.g_Model_ball.loadShaders("Shader/vertexshader.glsl", "Shader/blinn_phong_no_tex.glsl");
 	ball.g_Model_ball.setUseShader(true);
     glutMainLoop();

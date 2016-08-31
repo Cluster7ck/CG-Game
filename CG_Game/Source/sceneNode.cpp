@@ -11,6 +11,14 @@
 SceneNode::SceneNode(){	
 }
 
+SceneNode::~SceneNode() {
+	std::set<SceneNode *>::iterator it;
+
+	/*for (it = this->getChildren().begin(); it != this->getChildren().end(); ++it) {
+		delete it;
+	}*/
+}
+
 SceneNode::SceneNode(const std::string & Name, const Vector & Translation, const Vector & RotationAxis, const float RotationAngle, const Vector & Scale, SceneNode * pParent, Model * pModel){
 	this->setName(Name);
 	this->setLocalTransform(Translation, RotationAxis, RotationAngle);
@@ -102,4 +110,26 @@ void SceneNode::addChild(SceneNode* pChild) {
 
 void SceneNode::removeChild(SceneNode* pChild) {
 	this->m_Children.erase(pChild);
+}
+
+void SceneNode::draw() {
+	std::set<SceneNode *>::iterator it;
+
+	for (it = this->getChildren().begin(); it != this->getChildren().end(); ++it) {
+		this->draw(*it);
+	}
+}
+
+void SceneNode::draw(SceneNode *node) {
+	if (node != NULL && node->getModel() != NULL) {
+		glPushMatrix();
+		glMultMatrixf(node->getGlobalTransform());
+		node->getModel()->drawBuffer();
+		glPopMatrix();
+	}
+
+	std::set<SceneNode *>::iterator it;
+	for (it = node->getChildren().begin(); it != node->getChildren().end(); ++it) {
+		this->draw(*it);
+	}
 }

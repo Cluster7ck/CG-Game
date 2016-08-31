@@ -6,7 +6,9 @@
 
 #include "TerrainChunk.h"
 #include "utility_len.h"
-#define CHUNKSIZE 80
+
+#define CHUNKSIZE 200
+#define PICKUPS_PER_CHUNK  150
 
 struct TerrainOffset {
 	int offsetX;
@@ -19,17 +21,19 @@ struct TerrainOffset {
 
 class Terrain:public GameObject {
 public:
-	Terrain(int chunkCount, PerlinNoise terrainNoise) : chunkCount(chunkCount), terrainNoise(terrainNoise) {};
+	Terrain(int chunkCount,PerlinNoise terrainNoise) : chunkCount(chunkCount), terrainNoise(terrainNoise) {};
 	~Terrain();
 	void initChunks();
 	void draw();
 	void setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp, float MinHeight, float MaxHeight);
 	void setTerrainCenter(int x, int y);
+	void setPickups(std::vector<Model>* pickups);
 private:
 	void createChunkThread(TerrainOffset ChunkOffset);
 	int chunkCount;
 	int chunksPerSide;
 	int maxOffset;
+	std::vector<Model>* pickups;
 	TerrainOffset currentCenter;
 	PerlinNoise terrainNoise;
 	std::map<TerrainOffset, TerrainChunk> terrainMap;

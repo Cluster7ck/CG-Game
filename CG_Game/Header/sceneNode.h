@@ -10,6 +10,7 @@
 #define sceneNode_h
 
 #include <set>
+#include <string>
 #include "../Header/vector.h"
 #include "../Header/Model.h"
 #include "../Header/Matrix.h"
@@ -18,6 +19,7 @@ class SceneNode
 {
 public:
 	SceneNode();
+	~SceneNode();
 	SceneNode(const std::string& Name, const Vector& Translation, const Vector& RotationAxis, const float RotationAngle, const Vector& Scale, SceneNode* pParent, Model* pModel);
 
 	// getter
@@ -39,8 +41,10 @@ public:
 	void setParent(SceneNode* pNode);
 	void addChild(SceneNode* pChild);
 	void removeChild(SceneNode* pChild);
+	void draw();
 
 protected:
+	void draw(SceneNode* pNode);
 	std::string m_Name;
 	Model* m_pModel;
 	SceneNode* m_pParent;

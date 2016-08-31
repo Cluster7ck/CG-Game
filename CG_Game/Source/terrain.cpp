@@ -19,6 +19,7 @@ void Terrain::initChunks() {
 			tempOffset.offsetY = (chunksPerSide - 1 - y % chunksPerSide) - maxOffset;
 
 			tempChunk.create(CHUNKSIZE, CHUNKSIZE, 1, tempOffset.offsetX, tempOffset.offsetY, terrainNoise);
+			tempChunk.createObjects(pickups, PICKUPS_PER_CHUNK, 0.5f, terrainNoise);
 			tempChunk.bindBuffers();
 			tempChunk.setShaders(this->m_ShaderProgram);
 
@@ -56,6 +57,7 @@ void Terrain::initChunks() {
 void Terrain::createChunkThread(TerrainOffset ChunkOffset) {
 	TerrainChunk tempChunk;
 	tempChunk.create(CHUNKSIZE, CHUNKSIZE, 1, ChunkOffset.offsetX, ChunkOffset.offsetY, terrainNoise);
+	tempChunk.createObjects(pickups, PICKUPS_PER_CHUNK, 1.0f, terrainNoise);
 	tempChunk.setShaders(this->m_ShaderProgram);
 	std::pair<TerrainOffset, TerrainChunk> p(ChunkOffset, tempChunk);
 	terrainMap.insert(p);
@@ -79,8 +81,12 @@ void Terrain::draw() {
 			if (it != terrainMap.end()) {
 				it->second.bindBuffers();
 				if ((x != 0 && x != chunksPerSide - 1 && y != 0 && y != chunksPerSide - 1)) {
+					m_ShaderProgram.activate();
+					setShaderUniforms(Vector(0.0f, 64.0f, 0.0f), Color(1.0f, 1.0f, 1.0f), Color(1.0f, 1.0f, 1.0f), Color(0.1f, 0.1f, 0.1f), Color(0.2f, 0.2f, 0.2f), 1, m_BoundingBox.Min.Y, m_BoundingBox.Max.Y);
 					it->second.draw();
-					//it->second.drawBoundingBox();
+					m_ShaderProgram.deactivate();
+					it->second.getObjectsNode()->draw();
+					it->second.drawBoundingBox();
 				}
 			}
 			else{
@@ -117,5 +123,9 @@ void Terrain::setShaderUniforms(Vector LightPos, Color LightColor, Color DiffCol
 void Terrain::setTerrainCenter(int x, int y) {
 	currentCenter.offsetX = x;
 	currentCenter.offsetY = y;
+}
+
+void Terrain::setPickups(std::vector<Model>* pickups) {
+	this->pickups = pickups;
 }
 

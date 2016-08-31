@@ -10,6 +10,8 @@
 #define TerrainChunk_h
 
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <random>
 #include <windows.h>
 #include <GL/glew.h>
@@ -24,7 +26,7 @@
 #include "GameObject.h"
 #include "sceneNode.h"
 
-#define CHUNKSIZE 80
+#define CHUNKSIZE 200
 
 struct TerrainVertex {
 	Vector Pos;
@@ -36,16 +38,17 @@ public:
 	TerrainChunk();
 	~TerrainChunk();
 	bool create(float Width, float Depth, float HeightMultiplier, float OffsetX, float OffsetY, PerlinNoise pn);
-	bool createObjects(Model* ModelArray, int ModelArraySize, int ObjectCount, float Variance, PerlinNoise Pn);
+	bool createObjects(std::vector<Model>* ModelVector, int ObjectCount, float Variance, PerlinNoise Pn);
 	void bindBuffers();
 	void draw();
+	SceneNode* getObjectsNode() { return objects; };
 protected:
-	SceneNode objects;
+	SceneNode* objects;
 	Vector position;
 	TerrainVertex* Vertices;
 	unsigned int *Indices;
-	int terrain_offsetX;
-	int terrain_offsetY;
+	int terrainOffsetX;
+	int terrainOffsetZ;
 	bool isBound;
 	Texture m_HeightMap;
 	Texture m_GrassTex;

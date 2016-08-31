@@ -129,7 +129,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\utility_len.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

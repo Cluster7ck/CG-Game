@@ -14,15 +14,18 @@ Vector triangleNormal(Vector a, Vector b, Vector c);
 
 TerrainChunk::TerrainChunk() {
 	isBound = false;
+	objects = new SceneNode();
+	objects->setLocalTransform(Vector(0, 0, 0), Vector(0, 1, 0), 0);
+	objects->setName(std::string("Root"));
+	objects->setParent(NULL);
 }
 
 TerrainChunk::~TerrainChunk() {
-
 }
 
-bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, float OffsetX, float OffsetY, PerlinNoise pn) {
-	terrain_offsetX = OffsetX;
-	terrain_offsetY = OffsetY;
+bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, float OffsetX, float OffsetY, PerlinNoise Pn) {
+	terrainOffsetX = OffsetX;
+	terrainOffsetZ = OffsetY;
 
 	Vertices = new TerrainVertex[CHUNKSIZE*CHUNKSIZE];
 
@@ -33,7 +36,7 @@ bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, floa
 			Vertices[currentIndex].Pos.X = (x / (CHUNKSIZE*1.0f)*Width - (Width / 2)) + OffsetX*(Width-1);
 			Vertices[currentIndex].Pos.Z = (y / (CHUNKSIZE*1.0f)*Depth - (Depth / 2)) + OffsetY*(Depth-1);
 			//Height from Perlin Noise
-			Vertices[currentIndex].Pos.Y = pn.GetHeight(Vertices[currentIndex].Pos.X, Vertices[currentIndex].Pos.Z) * HeightMultiplier;
+			Vertices[currentIndex].Pos.Y = Pn.GetHeight(Vertices[currentIndex].Pos.X, Vertices[currentIndex].Pos.Z) * HeightMultiplier;
 
 			Vertices[currentIndex].Normal = Vector();
 		}
@@ -234,22 +237,41 @@ bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, floa
 			Vertices[x * CHUNKSIZE + y].Normal = vertexNormal * -1;
 		}
 	}
+
 	return true;
 }
 
-bool TerrainChunk::createObjects(Model* ModelArray, int ModelArraySize, int ObjectCount, float Variance, PerlinNoise Pn) {
-	int objCountDeviation = floor(ObjectCount * Variance);
-	srand(Pn.RandomSeed);
+bool TerrainChunk::createObjects(std::vector<Model>* ModelVector, int ObjectCount, float Variance, PerlinNoise Pn) {
+	int objCountDeviation = floor(ObjectCount * (1-Variance));
+	srand(Pn.GetHeight(terrainOffsetX,terrainOffsetZ));
 	int floor = ObjectCount - objCountDeviation, ceiling = ObjectCount + objCountDeviation, range = (ceiling - floor);
 	ObjectCount = floor + int((range * rand()) / (RAND_MAX + 1.0));
 
 	for (int i = 0; i < ObjectCount; i++) {
-		float x, z, scale;
-		scale = 1 + (2 * rand()) / (RAND_MAX + 1.0);
-		x = m_BoundingBox.Min.X + ((m_BoundingBox.Max.X - m_BoundingBox.Min.X) * rand()) / (RAND_MAX + 1.0);
-		z = m_BoundingBox.Min.Z + ((m_BoundingBox.Max.Z - m_BoundingBox.Min.Z) * rand()) / (RAND_MAX + 1.0);
+		float x, z, scale, rotation;
+		int modelNr;
 
+		std::stringstream ss;
+		ss << " ObjNr. " << i << " of TerrainChunk (" << this->terrainOffsetX << " , " << this->terrainOffsetZ << ") ";
+		std::string name = ss.str();
 
+		scale = randomFloat(0.5f, 4.0f);
+		x = randomFloat(m_BoundingBox.Min.X, m_BoundingBox.Max.X);
+		z = randomFloat(m_BoundingBox.Min.Z, m_BoundingBox.Max.Z);
+		//6.28319 radian  = 360 Deg
+		rotation = 0;//randomFloat(0, 6.28319f);
+		modelNr = rand() % ModelVector->size();
+		
+		
+		SceneNode* objectNode = new SceneNode(	name, 
+												Vector(x, Pn.GetHeight(x,z) ,z),
+												Vector(0,1,0),
+												rotation,
+												Vector(scale,scale,scale), 
+												objects, 
+												&(ModelVector->at(modelNr)));
+		//std::cout << "Node: " << objectNode->getName() << " y: " << objectNode->getLocalTransform().translation().Y << std::endl;
+		objects->addChild(objectNode);
 	}
 
 	return true;
