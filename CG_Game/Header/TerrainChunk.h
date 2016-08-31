@@ -1,11 +1,3 @@
-//
-//  TerrainChunk.h
-//  CG_P1
-//
-//  Created by  on 25.05.16.
-//  Copyright © 2016 hsos. All rights reserved.
-//
-
 #ifndef TerrainChunk_h
 #define TerrainChunk_h
 

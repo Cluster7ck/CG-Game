@@ -43,8 +43,10 @@ public:
 	void removeChild(SceneNode* pChild);
 	void draw();
 
+
 protected:
 	void draw(SceneNode* pNode);
+	BoundingBox getTransformedBoundingBox();
 	std::string m_Name;
 	Model* m_pModel;
 	SceneNode* m_pParent;

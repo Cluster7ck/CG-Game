@@ -1,11 +1,3 @@
-//
-//  terrain.cpp
-//  CG_P1
-//
-//  Created by  on 25.05.16.
-//  Copyright © 2016 hsos. All rights reserved.
-//
-
 #include "../Header/TerrainChunk.h"
 
 

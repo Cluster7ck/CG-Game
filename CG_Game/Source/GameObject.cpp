@@ -18,6 +18,55 @@ BoundingBox::BoundingBox() {
 BoundingBox::BoundingBox(const Vector& min, const Vector& max) : Min(min), Max(max) {
 }
 
+void BoundingBox::draw() {
+	glDisable(GL_LIGHTING);
+	glBegin(GL_LINES);
+	glColor3f(1.0, 1.0, 0);		//rgb(60%,20%,60%) = violette
+
+								//Back side
+	glVertex3f(Min.X, Min.Y, Min.Z);
+	glVertex3f(Max.X, Min.Y, Min.Z);
+
+	glVertex3f(Max.X, Min.Y, Min.Z);
+	glVertex3f(Max.X, Max.Y, Min.Z);
+
+	glVertex3f(Max.X, Max.Y, Min.Z);
+	glVertex3f(Min.X, Max.Y, Min.Z);
+
+	glVertex3f(Min.X, Max.Y, Min.Z);
+	glVertex3f(Min.X, Min.Y, Min.Z);
+
+	//Left side
+	glVertex3f(Min.X, Min.Y, Min.Z);
+	glVertex3f(Min.X, Min.Y, Max.Z);
+
+	glVertex3f(Min.X, Min.Y, Max.Z);
+	glVertex3f(Min.X, Max.Y, Max.Z);
+
+	glVertex3f(Min.X, Max.Y, Max.Z);
+	glVertex3f(Min.X, Max.Y, Min.Z);
+
+	//Right side
+	glVertex3f(Max.X, Min.Y, Min.Z);
+	glVertex3f(Max.X, Min.Y, Max.Z);
+
+	glVertex3f(Max.X, Min.Y, Max.Z);
+	glVertex3f(Max.X, Max.Y, Max.Z);
+
+	glVertex3f(Max.X, Max.Y, Max.Z);
+	glVertex3f(Max.X, Max.Y, Min.Z);
+
+	//Front side
+	glVertex3f(Max.X, Min.Y, Max.Z);
+	glVertex3f(Min.X, Min.Y, Max.Z);
+
+	glVertex3f(Max.X, Max.Y, Max.Z);
+	glVertex3f(Min.X, Max.Y, Max.Z);
+
+	glEnd();
+	glEnable(GL_LIGHTING);
+}
+
 GameObject::GameObject()
 {
 }
@@ -39,7 +88,7 @@ ShaderProgram GameObject::getShaderProgram() {
 }
 
 void GameObject::drawBoundingBox() {
-	glDisable(GL_LIGHTING);
+	/*glDisable(GL_LIGHTING);
 	glBegin(GL_LINES);
 	glColor3f(1.0,1.0,0);		//rgb(60%,20%,60%) = violette
 
@@ -84,7 +133,8 @@ void GameObject::drawBoundingBox() {
 	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Max.Y, m_BoundingBox.Max.Z);
 
 	glEnd();
-	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHTING);*/
+	m_BoundingBox.draw();
 }
 
 void GameObject::loadShaders(const char* VertexShader, const char* FragmentShader) {

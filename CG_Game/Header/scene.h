@@ -1,11 +1,3 @@
-//
-//  scene.h
-//  CG_P1
-//
-//  Created by  on 30.04.16.
-//  Copyright © 2016 hsos. All rights reserved.
-//
-
 #ifndef scene_h
 #define scene_h
 

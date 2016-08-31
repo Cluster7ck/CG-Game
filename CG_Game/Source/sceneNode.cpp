@@ -1,11 +1,3 @@
-//
-//  sceneNode.cpp
-//  CG_P1
-//
-//  Created by  on 30.04.16.
-//  Copyright © 2016 hsos. All rights reserved.
-//
-
 #include "../Header/sceneNode.h"
 
 SceneNode::SceneNode(){	
@@ -126,10 +118,30 @@ void SceneNode::draw(SceneNode *node) {
 		glMultMatrixf(node->getGlobalTransform());
 		node->getModel()->drawBuffer();
 		glPopMatrix();
+
+		//node->getTransformedBoundingBox().draw();
 	}
 
 	std::set<SceneNode *>::iterator it;
 	for (it = node->getChildren().begin(); it != node->getChildren().end(); ++it) {
 		this->draw(*it);
 	}
+}
+
+BoundingBox SceneNode::getTransformedBoundingBox(){
+	BoundingBox tempBox = m_pModel->m_BoundingBox;
+	tempBox.Min = this->getGlobalTransform() * tempBox.Min;
+	tempBox.Max = this->getGlobalTransform() * tempBox.Max;
+	/*
+	tempBox.Min.X = tempBox.Min.X * m_Scaling.X;
+	tempBox.Max.X = tempBox.Max.X * m_Scaling.X;
+
+	tempBox.Min.Z = tempBox.Min.Z * m_Scaling.;
+	tempBox.Max.Z = tempBox.Max.Z * m_Scaling.;
+
+	tempBox.Min.Y = tempBox.Min.Y * m_Scaling.;
+	tempBox.Max.Y = tempBox.Max.Y * m_Scaling.;*/
+
+	//tempBox.Min = tempBox.Min * ;
+	return tempBox;
 }

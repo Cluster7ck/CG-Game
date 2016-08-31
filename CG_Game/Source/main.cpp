@@ -1,12 +1,3 @@
-//
-//  main.cpp
-//  RealtimeRending
-//
-//  Created by Philipp Lensing on 22.10.14.
-//  Copyright (c) 2014 Philipp Lensing. All rights reserved.
-//
-
-
 #include <iostream>
 #include <math.h>
 #include <vector>
@@ -23,7 +14,7 @@
 #include "../Header/Terrain.h"
 
 #define CHUNKS_COUNT 49
-#define PICKUP_COUNT 2
+#define PICKUP_COUNT 3
 
 // window x and y size
 const unsigned int g_WindowWidth=1400;
@@ -35,7 +26,7 @@ const Vector g_LightPos = Vector( 0,64,0);
 float deltaTime = 0;
 int elapsedTimeLastFrame = 0;
 
-char* models[PICKUP_COUNT] = { "Ressourcen/ball.obj","Ressourcen/rock.obj" };
+char* models[PICKUP_COUNT] = { "Ressourcen/ball.obj","Ressourcen/rock.obj","Ressourcen/tree.obj" };
 //Terrain
 PerlinNoise noise(0.5, 0.042, 40, 1, 1400);
 std::vector<Model> pickups;
@@ -79,7 +70,8 @@ int main(int argc, char * argv[]) {
 	glutSpecialFunc(SpecialKeyboardCallback);
 
 	for (int i = 0; i < PICKUP_COUNT; i++) {
-		pickups.push_back(Model());
+		Model tempModel;
+		pickups.push_back(tempModel);
 		pickups.at(i).load(models[i], true);
 		pickups.at(i).loadShaders("Shader/vertexshader.glsl", "Shader/blinn_phong_no_tex.glsl");
 		pickups.at(i).setUseShader(true);

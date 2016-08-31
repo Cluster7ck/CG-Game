@@ -17,7 +17,7 @@ class Material {
 public:
 	Material(Vector kd, Vector ks, Vector ka, float ns, std::string name);
 	Material();
-	~Material();
+	//~Material();
 	const Color& getDiffuseColor() const;
 	const Color& getSpecularColor() const;
 	const Color& getAmbientColor() const;

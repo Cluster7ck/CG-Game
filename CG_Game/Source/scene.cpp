@@ -1,11 +1,3 @@
-//
-//  scene.cpp
-//  CG_P1
-//
-//  Created by  on 30.04.16.
-//  Copyright © 2016 hsos. All rights reserved.
-//
-
 #include "../Header/scene.h"
 
 void traverseHierarchy(SceneNode* node);

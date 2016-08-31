@@ -48,7 +48,7 @@ protected:
 	void setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp, float MinHeight, float MaxHeight);
 	
 	bool useShader;
-    Material* m_pMaterials;
+	std::vector<Material> m_Materials;
     unsigned int m_MaterialCount;
     std::map<std::string,std::vector<unsigned int>> m_mtlMap;
 	std::map<std::string, std::vector<unsigned int>>::iterator m_mtlMap_iter;

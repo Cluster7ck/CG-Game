@@ -16,15 +16,13 @@
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 void setMaterial(Material m);
 
-Model::Model() : m_pVertices(NULL), m_pMaterials(NULL), m_MaterialCount(0), m_VertexCount(0) {
+Model::Model() : m_pVertices(NULL), m_MaterialCount(0), m_VertexCount(0) {
 
 }
 
 Model::~Model() {
-    if( m_pVertices)
-        delete [] m_pVertices;
-    if(m_pMaterials)
-        delete [] m_pMaterials;
+    //if( m_pVertices)
+     //   delete [] m_pVertices;
 }
 
 bool Model::load(const char* Filename, bool FitSize) {
@@ -339,7 +337,7 @@ void Model::createMaterials(const char* Filename) {
 	fileStream.clear();
 	fileStream.seekg(0, fileStream.beg);
 
-	m_pMaterials = new Material[mtlCount];
+	m_Materials.reserve(mtlCount);
 
 	while (std::getline(fileStream, line)) {
 		//remove tabs
@@ -353,38 +351,41 @@ void Model::createMaterials(const char* Filename) {
 
 		if (strncmp(charPointer, "newmtl", 6) == 0) {
 			charPointer += 7;
-			m_pMaterials[m_MaterialCount].setName(charPointer);
+
+			m_Materials.push_back(Material());
+			m_Materials.at(m_MaterialCount).setName(charPointer);
+
 			m_MaterialCount++;
 		}
 		else if (strncmp(charPointer,"Kd",2) == 0) {
 			charPointer += 2;
 			Color diffColor;
 			sscanf(charPointer, "%f %f %f", &diffColor.R, &diffColor.G, &diffColor.B);
-			m_pMaterials[m_MaterialCount - 1].setDiffuseColor(diffColor);
+			m_Materials.at(m_MaterialCount-1).setDiffuseColor(diffColor);
 		}
 		else if (strncmp(charPointer, "Ks", 2) == 0) {
 			charPointer += 2;
 			Color specColor;
 			sscanf(charPointer, "%f %f %f", &specColor.R, &specColor.G, &specColor.B);
-			m_pMaterials[m_MaterialCount - 1].setSpecularColor(specColor);
+			m_Materials.at(m_MaterialCount - 1).setSpecularColor(specColor);
 		}
 		else if (strncmp(charPointer, "Ns", 2) == 0) {
 			charPointer += 2;
 			float specExp;
 			sscanf(charPointer, "%f", &specExp);
-			m_pMaterials[m_MaterialCount - 1].setSpecularExponent(specExp);
+			m_Materials.at(m_MaterialCount - 1).setSpecularExponent(specExp);
 		}
 		else if (strncmp(charPointer, "Ka", 2) == 0) {
 			charPointer += 2;
 			Color ambColor;
 			sscanf(charPointer, "%f %f %f", &ambColor.R, &ambColor.G, &ambColor.B);
-			m_pMaterials[m_MaterialCount - 1].setAmbientColor(ambColor);
+			m_Materials.at(m_MaterialCount - 1).setAmbientColor(ambColor);
 		}
 		else if (strncmp(charPointer, "map_Kd", 6) == 0) {
 			charPointer += 7;
 			char textureFilename[256];
 			replaceFilename(Filename, charPointer, textureFilename);
-			m_pMaterials[m_MaterialCount - 1].setDiffuseTexture(textureFilename);
+			m_Materials.at(m_MaterialCount - 1).setDiffuseTexture(textureFilename);
 		}
 
 	}
@@ -427,8 +428,8 @@ void Model::draw(){
 
 			Material currentMaterial;
 			for (unsigned int k = 0; k < m_MaterialCount; k++) {
-				if (itMap.first.compare(m_pMaterials[k].getName()) == 0) {
-					currentMaterial = m_pMaterials[k];
+				if (itMap.first.compare(m_Materials.at(k).getName()) == 0) {
+					currentMaterial = m_Materials.at(k);
 				}
 			}
 			setMaterial(currentMaterial);

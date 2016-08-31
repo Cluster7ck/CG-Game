@@ -23,6 +23,7 @@ class BoundingBox {
 public:
 	BoundingBox();
 	BoundingBox(const Vector& min, const Vector& max);
+	void draw();
 	Vector Min;
 	Vector Max;
 };

@@ -12,10 +12,10 @@ Material::Material(Vector kd, Vector ks, Vector ka, float ns, std::string name) 
 
 Material::Material() {
 }
-
+/*
 Material::~Material() {
 }
-
+*/
 const Color& Material::getDiffuseColor() const {
 	return m_DiffuseColor;
 }
