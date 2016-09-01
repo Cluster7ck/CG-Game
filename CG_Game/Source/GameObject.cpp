@@ -18,6 +18,13 @@ BoundingBox::BoundingBox() {
 BoundingBox::BoundingBox(const Vector& min, const Vector& max) : Min(min), Max(max) {
 }
 
+BoundingBox BoundingBox::operator*(const Matrix& M) const {
+	BoundingBox temp = *this;
+	temp.Min = M * temp.Min;
+	temp.Max = M *  temp.Max;
+	return temp;
+}
+
 void BoundingBox::draw() {
 	glDisable(GL_LIGHTING);
 	glBegin(GL_LINES);
@@ -70,13 +77,25 @@ void BoundingBox::draw() {
 //http://www.miguelcasillas.com/?p=30
 bool BoundingBox::collision(const BoundingBox& otherBox)
 {
+	//if (std::fabs(this->c[0] - otherBox.c[0]) > (this->r[0] + otherBox.r[0])) return false;
+	//if (std::fabs(this->c[1] - otherBox.c[1]) > (this->r[1] + otherBox.r[1])) return false;
+	//if (std::fabs(this->c[2] - otherBox.c[2]) > (this->r[2] + otherBox.r[2])) return false;
 	//Check if Box1's max is greater than Box2's min and Box1's min is less than Box2's max
-	return(this->Max.X > otherBox.Min.X &&
+	/*return(this->Max.X > otherBox.Min.X &&
 		this->Min.X < otherBox.Max.X &&
 		this->Max.Y > otherBox.Min.X &&
 		this->Min.Y < otherBox.Max.Y &&
 		this->Max.Z > otherBox.Min.X &&
-		this->Min.Z < otherBox.Max.Z);
+		this->Min.Z < otherBox.Max.Z);*/
+
+	if (this->Min.X > otherBox.Max.X) return false;
+	if (this->Min.Y > otherBox.Max.Y) return false;
+	if (this->Min.Z > otherBox.Max.Z) return false;
+	if (this->Max.X < otherBox.Min.X) return false;
+	if (this->Max.Y < otherBox.Min.Y) return false;
+	if (this->Max.Z < otherBox.Min.Z) return false;
+
+	return true;
 
 	//If not, it will return false
 }

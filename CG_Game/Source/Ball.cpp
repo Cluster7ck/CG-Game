@@ -68,48 +68,47 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 
 	float deltaY = terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5 - m_Ball.translation().Y;
 	Vector newPos(m_Ball.translation().X + moveVector.X, terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5, m_Ball.translation().Z + moveVector.Z);
-
+	m_Translation.translation(moveVector.X, deltaY, moveVector.Z);
 	//COLLISION
 	Matrix mTrans = m_Ball;
 	mTrans.m03 = newPos.X;
 	mTrans.m13 = newPos.Y;
 	mTrans.m23 = newPos.Z;
-	BoundingBox checkBox = recalculateBoundingBox(mTrans);
+	BoundingBox checkBox = g_Model_ball.getBoundingBox() * m_Translation;
+	checkBox.draw();
 	if (chunkObjects->collision(checkBox)) {
-		std::cout << "Collision" << std::endl;
-		newPos.X = m_Ball.translation().X;
-		newPos.Y = m_Ball.translation().Y;
-		newPos.Z = m_Ball.translation().Z;
+		newPos.X = m_Ball.translation().X - newPos.X;
+		newPos.Y = m_Ball.translation().Y - newPos.Y;
+		newPos.Z = m_Ball.translation().Z - newPos.Z;
+	}
+	else {
+		//(-x^2+1)*3 as rotation speed decline function
+		float rotationFactorStraight = 3 - 3 * pow(1 - straightForce, 2);
+		float rotationFactorSide = 3 - 3 * pow(1 - sideForce, 2);
+		rotX.rotationAxis(rotationAxisStraight, 0.5* M_PI  * straight * DeltaTime * rotationFactorStraight);
+		rotZ.rotationAxis(rotationAxisSide, 0.5* M_PI * -side * DeltaTime * rotationFactorSide);
+
+		//Transformation
+		m_Rotation = (rotX*rotZ);
+		m_Ball = (m_Ball.invert() * m_Rotation).invert();
+
+		//Set new WorldPos
+		m_Ball.m03 = newPos.X;
+		m_Ball.m13 = newPos.Y;
+		m_Ball.m23 = newPos.Z;
+
+		recalculateBoundingBox();
+		//Camera transform
+		g_Camera.setTarget(m_Ball.translation());
+		g_Camera.setPosition(m_Translation * g_Camera.getPosition());
 	}
 
-
-	//(-x^2+1)*3 as rotation speed decline function
-	float rotationFactorStraight = 3 - 3 * pow(1-straightForce, 2);
-	float rotationFactorSide = 3 - 3 *pow(1 - sideForce, 2);
-	rotX.rotationAxis(rotationAxisStraight, 0.5* M_PI  * straight * DeltaTime * rotationFactorStraight);
-	rotZ.rotationAxis(rotationAxisSide, 0.5* M_PI * -side * DeltaTime * rotationFactorSide);
-
-	//Transformation
-	m_Rotation = (rotX*rotZ);
-	m_Ball = ( m_Ball.invert() * m_Rotation).invert();
-	
-	//Set new WorldPos
-	m_Ball.m03 = newPos.X;
-	m_Ball.m13 = newPos.Y;
-	m_Ball.m23 = newPos.Z;
 	/*
 	if (accumulatedTime >= 2) {
 		//std::cout << "\nX: " << m_Ball.translation().X << " Y: " << terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5 << " Z: " << m_Ball.translation().Z<< std::endl;
 		std::cout << "Current x: "<< newPos.X << "Current y: " << newPos.Y << "Current z: " << newPos.Z << std::endl;
 		accumulatedTime = 0;
 	}*/
-	
-	//Camera transform
-	m_Translation.translation(moveVector.X, deltaY, moveVector.Z);
-	g_Camera.setTarget(m_Ball.translation());
-	g_Camera.setPosition(m_Translation * g_Camera.getPosition());
-	
-
 	draw(DeltaTime);
 	
 }
@@ -164,60 +163,11 @@ void Ball::drawAxis() {
 }
 
 void Ball::drawBoundingBox() {
-	g_Model_ball.setBoundingBox(recalculateBoundingBox(m_Translation));
-	glDisable(GL_LIGHTING);
-	glBegin(GL_LINES);
-	glColor3f(1.0, 1.0, 0);		//rgb(60%,20%,60%) = violette
-
-	//Back side
-	glVertex3f(g_Model_ball.getBoundingBox().Min.X, g_Model_ball.getBoundingBox().Min.Y, g_Model_ball.getBoundingBox().Min.Z);
-	glVertex3f(g_Model_ball.getBoundingBox().Max.X, g_Model_ball.getBoundingBox().Min.Y, g_Model_ball.getBoundingBox().Min.Z);
-
-	glVertex3f(g_Model_ball.getBoundingBox().Max.X, g_Model_ball.getBoundingBox().Min.Y, g_Model_ball.getBoundingBox().Min.Z);
-	glVertex3f(g_Model_ball.getBoundingBox().Max.X, g_Model_ball.getBoundingBox().Max.Y, g_Model_ball.getBoundingBox().Min.Z);
-
-	glVertex3f(g_Model_ball.getBoundingBox().Max.X, g_Model_ball.getBoundingBox().Max.Y, g_Model_ball.getBoundingBox().Min.Z);
-	glVertex3f(g_Model_ball.getBoundingBox().Min.X, g_Model_ball.getBoundingBox().Max.Y, g_Model_ball.getBoundingBox().Min.Z);
-
-	glVertex3f(g_Model_ball.getBoundingBox().Min.X, g_Model_ball.getBoundingBox().Max.Y, g_Model_ball.getBoundingBox().Min.Z);
-	glVertex3f(g_Model_ball.getBoundingBox().Min.X, g_Model_ball.getBoundingBox().Min.Y, g_Model_ball.getBoundingBox().Min.Z);
-
-	//Left side
-	glVertex3f(g_Model_ball.getBoundingBox().Min.X, g_Model_ball.getBoundingBox().Min.Y, g_Model_ball.getBoundingBox().Min.Z);
-	glVertex3f(g_Model_ball.getBoundingBox().Min.X, g_Model_ball.getBoundingBox().Min.Y, g_Model_ball.getBoundingBox().Max.Z);
-
-	glVertex3f(g_Model_ball.getBoundingBox().Min.X, g_Model_ball.getBoundingBox().Min.Y, g_Model_ball.getBoundingBox().Max.Z);
-	glVertex3f(g_Model_ball.getBoundingBox().Min.X, g_Model_ball.getBoundingBox().Max.Y, g_Model_ball.getBoundingBox().Max.Z);
-
-	glVertex3f(g_Model_ball.getBoundingBox().Min.X, g_Model_ball.getBoundingBox().Max.Y, g_Model_ball.getBoundingBox().Max.Z);
-	glVertex3f(g_Model_ball.getBoundingBox().Min.X, g_Model_ball.getBoundingBox().Max.Y, g_Model_ball.getBoundingBox().Min.Z);
-
-	//Right side
-	glVertex3f(g_Model_ball.getBoundingBox().Max.X, g_Model_ball.getBoundingBox().Min.Y, g_Model_ball.getBoundingBox().Min.Z);
-	glVertex3f(g_Model_ball.getBoundingBox().Max.X, g_Model_ball.getBoundingBox().Min.Y, g_Model_ball.getBoundingBox().Max.Z);
-
-	glVertex3f(g_Model_ball.getBoundingBox().Max.X, g_Model_ball.getBoundingBox().Min.Y, g_Model_ball.getBoundingBox().Max.Z);
-	glVertex3f(g_Model_ball.getBoundingBox().Max.X, g_Model_ball.getBoundingBox().Max.Y, g_Model_ball.getBoundingBox().Max.Z);
-
-	glVertex3f(g_Model_ball.getBoundingBox().Max.X, g_Model_ball.getBoundingBox().Max.Y, g_Model_ball.getBoundingBox().Max.Z);
-	glVertex3f(g_Model_ball.getBoundingBox().Max.X, g_Model_ball.getBoundingBox().Max.Y, g_Model_ball.getBoundingBox().Min.Z);
-
-	//Front side
-	glVertex3f(g_Model_ball.getBoundingBox().Max.X, g_Model_ball.getBoundingBox().Min.Y, g_Model_ball.getBoundingBox().Max.Z);
-	glVertex3f(g_Model_ball.getBoundingBox().Min.X, g_Model_ball.getBoundingBox().Min.Y, g_Model_ball.getBoundingBox().Max.Z);
-
-	glVertex3f(g_Model_ball.getBoundingBox().Max.X, g_Model_ball.getBoundingBox().Max.Y, g_Model_ball.getBoundingBox().Max.Z);
-	glVertex3f(g_Model_ball.getBoundingBox().Min.X, g_Model_ball.getBoundingBox().Max.Y, g_Model_ball.getBoundingBox().Max.Z);
-
-	glEnd();
-	glEnable(GL_LIGHTING);
+	g_Model_ball.drawBoundingBox();
 }
 
-BoundingBox Ball::recalculateBoundingBox(Matrix transM) {
-	BoundingBox tempBox = g_Model_ball.getBoundingBox();
-	tempBox.Min = transM * g_Model_ball.getBoundingBox().Min;
-	tempBox.Max = transM * g_Model_ball.getBoundingBox().Max;
-	return tempBox;// g_Model_ball.setBoundingBox(tempBox);
+void Ball::recalculateBoundingBox() {
+	g_Model_ball.setBoundingBox(g_Model_ball.getBoundingBox()*m_Translation);
 }
 
 float clamp(float n, float lower, float upper) {

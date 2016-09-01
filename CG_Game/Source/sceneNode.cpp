@@ -119,7 +119,7 @@ void SceneNode::draw(SceneNode *node) {
 		node->getModel()->drawBuffer();
 		glPopMatrix();
 
-		//node->getTransformedBoundingBox().draw();
+		node->getTransformedBoundingBox().draw();
 	}
 
 	std::set<SceneNode *>::iterator it;
@@ -142,6 +142,11 @@ bool SceneNode::collision(BoundingBox TestBox) {
 	for (it = this->getChildren().begin(); it != this->getChildren().end(); ++it) {
 
 		coll = (*it)->getTransformedBoundingBox().collision(TestBox);
+		if (coll == true) {
+			(*it)->getTransformedBoundingBox().draw();
+			break;
+		}
+			
 		coll = (*it)->collision(TestBox);
 		//it->collision(*it);
 		if (coll == true)

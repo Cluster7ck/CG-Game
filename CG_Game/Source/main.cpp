@@ -251,8 +251,8 @@ void DrawScene() {
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 	
 	ball.update(deltaTime,terrain.getCenterChunk().getObjectsNode());
-	ball.drawAxis();
-	ball.g_Model_ball.drawBoundingBox();
+	//ball.drawAxis();
+	ball.drawBoundingBox();
 	//Ball Coordiantes to terrain offset. switches when at center
 	float offsetX = ball.m_Ball.translation().X >= 0 ?  floor(ball.m_Ball.translation().X / (CHUNKSIZE - 1)) : ceil(ball.m_Ball.translation().X / (CHUNKSIZE - 1));
 	float offsetZ = ball.m_Ball.translation().Z >= 0 ? floor(ball.m_Ball.translation().Z / (CHUNKSIZE - 1)) : ceil(ball.m_Ball.translation().Z / (CHUNKSIZE - 1));

@@ -23,6 +23,8 @@ class BoundingBox {
 public:
 	BoundingBox();
 	BoundingBox(const Vector& min, const Vector& max);
+	BoundingBox operator*(const Matrix& M) const;
+
 	void draw();
 	bool collision(const BoundingBox& otherBox);
 

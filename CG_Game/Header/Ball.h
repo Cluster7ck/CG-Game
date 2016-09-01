@@ -44,7 +44,7 @@ public:
 	void drawAxis();
 	void drawBoundingBox();
 private:
-	BoundingBox recalculateBoundingBox(Matrix transM);
+	void recalculateBoundingBox();
 	float straightForce;
 	float sideForce;
 	PerlinNoise terrainNoise;

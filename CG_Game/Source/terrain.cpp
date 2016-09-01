@@ -50,8 +50,10 @@ void Terrain::initChunks() {
 			m_BoundingBox.Max.Z = iterator->second.getBoundingBox().Max.Z;
 	}
 
-	//std::cout << "\nTerrain Min Height: " << m_BoundingBox.Min.Y << std::endl;
-	//std::cout << "\nTerrain Max Height: " << m_BoundingBox.Max.Y << std::endl;
+	std::cout << "\nTerrain Min Height: " << m_BoundingBox.Min.Y << std::endl;
+	std::cout << "\nTerrain Max Height: " << m_BoundingBox.Max.Y << std::endl;
+
+	std::cout << "\nTerrain Min Height: " << m_BoundingBox.Min.Y << std::endl;
 }
 
 void Terrain::createChunkThread(TerrainOffset ChunkOffset) {
