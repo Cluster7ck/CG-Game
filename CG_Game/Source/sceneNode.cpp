@@ -132,16 +132,21 @@ BoundingBox SceneNode::getTransformedBoundingBox(){
 	BoundingBox tempBox = m_pModel->m_BoundingBox;
 	tempBox.Min = this->getGlobalTransform() * tempBox.Min;
 	tempBox.Max = this->getGlobalTransform() * tempBox.Max;
-	/*
-	tempBox.Min.X = tempBox.Min.X * m_Scaling.X;
-	tempBox.Max.X = tempBox.Max.X * m_Scaling.X;
 
-	tempBox.Min.Z = tempBox.Min.Z * m_Scaling.;
-	tempBox.Max.Z = tempBox.Max.Z * m_Scaling.;
-
-	tempBox.Min.Y = tempBox.Min.Y * m_Scaling.;
-	tempBox.Max.Y = tempBox.Max.Y * m_Scaling.;*/
-
-	//tempBox.Min = tempBox.Min * ;
 	return tempBox;
+}
+
+bool SceneNode::collision(BoundingBox TestBox) {
+	bool coll = false;
+	std::set<SceneNode *>::iterator it;
+	for (it = this->getChildren().begin(); it != this->getChildren().end(); ++it) {
+
+		coll = (*it)->getTransformedBoundingBox().collision(TestBox);
+		coll = (*it)->collision(TestBox);
+		//it->collision(*it);
+		if (coll == true)
+			break;
+	}
+
+	return coll;
 }

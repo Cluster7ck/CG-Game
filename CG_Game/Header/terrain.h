@@ -28,6 +28,7 @@ public:
 	void setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp, float MinHeight, float MaxHeight);
 	void setTerrainCenter(int x, int y);
 	void setPickups(std::vector<Model>* pickups);
+	TerrainChunk getCenterChunk();
 private:
 	void createChunkThread(TerrainOffset ChunkOffset);
 	int chunkCount;

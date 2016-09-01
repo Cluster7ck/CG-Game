@@ -38,7 +38,7 @@ void Ball::steer(float ForwardBackward, float LeftRight) {
 	straightForce = 1;
 }
 
-void Ball::update(float DeltaTime) {
+void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 	
 	Matrix transM, rotX, rotZ;
 	static float accumulatedTime = 0;
@@ -69,6 +69,20 @@ void Ball::update(float DeltaTime) {
 	float deltaY = terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5 - m_Ball.translation().Y;
 	Vector newPos(m_Ball.translation().X + moveVector.X, terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5, m_Ball.translation().Z + moveVector.Z);
 
+	//COLLISION
+	Matrix mTrans = m_Ball;
+	mTrans.m03 = newPos.X;
+	mTrans.m13 = newPos.Y;
+	mTrans.m23 = newPos.Z;
+	BoundingBox checkBox = recalculateBoundingBox(mTrans);
+	if (chunkObjects->collision(checkBox)) {
+		std::cout << "Collision" << std::endl;
+		newPos.X = m_Ball.translation().X;
+		newPos.Y = m_Ball.translation().Y;
+		newPos.Z = m_Ball.translation().Z;
+	}
+
+
 	//(-x^2+1)*3 as rotation speed decline function
 	float rotationFactorStraight = 3 - 3 * pow(1-straightForce, 2);
 	float rotationFactorSide = 3 - 3 *pow(1 - sideForce, 2);
@@ -83,19 +97,18 @@ void Ball::update(float DeltaTime) {
 	m_Ball.m03 = newPos.X;
 	m_Ball.m13 = newPos.Y;
 	m_Ball.m23 = newPos.Z;
-	
+	/*
 	if (accumulatedTime >= 2) {
 		//std::cout << "\nX: " << m_Ball.translation().X << " Y: " << terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5 << " Z: " << m_Ball.translation().Z<< std::endl;
 		std::cout << "Current x: "<< newPos.X << "Current y: " << newPos.Y << "Current z: " << newPos.Z << std::endl;
 		accumulatedTime = 0;
-	}
+	}*/
 	
 	//Camera transform
 	m_Translation.translation(moveVector.X, deltaY, moveVector.Z);
 	g_Camera.setTarget(m_Ball.translation());
 	g_Camera.setPosition(m_Translation * g_Camera.getPosition());
-	//BBox
-	recalculateBoundingBox();
+	
 
 	draw(DeltaTime);
 	
@@ -151,7 +164,7 @@ void Ball::drawAxis() {
 }
 
 void Ball::drawBoundingBox() {
-	recalculateBoundingBox();
+	g_Model_ball.setBoundingBox(recalculateBoundingBox(m_Translation));
 	glDisable(GL_LIGHTING);
 	glBegin(GL_LINES);
 	glColor3f(1.0, 1.0, 0);		//rgb(60%,20%,60%) = violette
@@ -200,11 +213,11 @@ void Ball::drawBoundingBox() {
 	glEnable(GL_LIGHTING);
 }
 
-void Ball::recalculateBoundingBox() {
+BoundingBox Ball::recalculateBoundingBox(Matrix transM) {
 	BoundingBox tempBox = g_Model_ball.getBoundingBox();
-	tempBox.Min = m_Translation * g_Model_ball.getBoundingBox().Min;
-	tempBox.Max = m_Translation * g_Model_ball.getBoundingBox().Max;
-	g_Model_ball.setBoundingBox(tempBox);
+	tempBox.Min = transM * g_Model_ball.getBoundingBox().Min;
+	tempBox.Max = transM * g_Model_ball.getBoundingBox().Max;
+	return tempBox;// g_Model_ball.setBoundingBox(tempBox);
 }
 
 float clamp(float n, float lower, float upper) {

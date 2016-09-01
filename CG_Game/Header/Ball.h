@@ -14,6 +14,7 @@
 #include <algorithm>
 
 #include "PerlinNoise.h"
+#include "sceneNode.h"
 #include "vector.h"
 #include "model.h"
 #include "matrix.h"
@@ -38,12 +39,12 @@ public:
 	~Ball();
 	bool load(const char* BallModel, const Vector& StartPos);
 	void steer(float ForwardBackward, float LeftRight);
-	void update(float DeltaTime);
+	void update(float DeltaTime, SceneNode* chunkObjects);
 	void draw(float DeltaTime);
 	void drawAxis();
 	void drawBoundingBox();
 private:
-	void recalculateBoundingBox();
+	BoundingBox recalculateBoundingBox(Matrix transM);
 	float straightForce;
 	float sideForce;
 	PerlinNoise terrainNoise;

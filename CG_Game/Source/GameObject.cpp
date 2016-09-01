@@ -67,6 +67,20 @@ void BoundingBox::draw() {
 	glEnable(GL_LIGHTING);
 }
 
+//http://www.miguelcasillas.com/?p=30
+bool BoundingBox::collision(const BoundingBox& otherBox)
+{
+	//Check if Box1's max is greater than Box2's min and Box1's min is less than Box2's max
+	return(this->Max.X > otherBox.Min.X &&
+		this->Min.X < otherBox.Max.X &&
+		this->Max.Y > otherBox.Min.X &&
+		this->Min.Y < otherBox.Max.Y &&
+		this->Max.Z > otherBox.Min.X &&
+		this->Min.Z < otherBox.Max.Z);
+
+	//If not, it will return false
+}
+
 GameObject::GameObject()
 {
 }

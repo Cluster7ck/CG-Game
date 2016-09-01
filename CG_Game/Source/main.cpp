@@ -250,7 +250,7 @@ void DrawScene() {
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 	
-	ball.update(deltaTime);
+	ball.update(deltaTime,terrain.getCenterChunk().getObjectsNode());
 	ball.drawAxis();
 	ball.g_Model_ball.drawBoundingBox();
 	//Ball Coordiantes to terrain offset. switches when at center

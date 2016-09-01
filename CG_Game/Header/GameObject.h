@@ -24,6 +24,8 @@ public:
 	BoundingBox();
 	BoundingBox(const Vector& min, const Vector& max);
 	void draw();
+	bool collision(const BoundingBox& otherBox);
+
 	Vector Min;
 	Vector Max;
 };

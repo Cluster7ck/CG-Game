@@ -50,8 +50,8 @@ void Terrain::initChunks() {
 			m_BoundingBox.Max.Z = iterator->second.getBoundingBox().Max.Z;
 	}
 
-	std::cout << "\nTerrain Min Height: " << m_BoundingBox.Min.Y << std::endl;
-	std::cout << "\nTerrain Max Height: " << m_BoundingBox.Max.Y << std::endl;
+	//std::cout << "\nTerrain Min Height: " << m_BoundingBox.Min.Y << std::endl;
+	//std::cout << "\nTerrain Max Height: " << m_BoundingBox.Max.Y << std::endl;
 }
 
 void Terrain::createChunkThread(TerrainOffset ChunkOffset) {
@@ -123,6 +123,13 @@ void Terrain::setShaderUniforms(Vector LightPos, Color LightColor, Color DiffCol
 void Terrain::setTerrainCenter(int x, int y) {
 	currentCenter.offsetX = x;
 	currentCenter.offsetY = y;
+}
+
+TerrainChunk Terrain::getCenterChunk() {
+	std::map<TerrainOffset, TerrainChunk>::iterator it;
+	it = terrainMap.find(currentCenter);
+
+	return it->second;
 }
 
 void Terrain::setPickups(std::vector<Model>* pickups) {
