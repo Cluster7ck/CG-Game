@@ -50,6 +50,7 @@ void mouseWheel(int, int, int, int);
 void KeyboardCallback( unsigned char key, int x, int y);
 void KeyboardUpCallback(unsigned char key, int x, int y);
 void SpecialKeyboardCallback(int key, int x, int y);
+Vector getOffsets(Vector pos);
 int main(int argc, char * argv[]) {
     // initialize the glut system and create a window
     glutInitWindowSize(g_WindowWidth, g_WindowHeight);
@@ -253,10 +254,9 @@ void DrawScene() {
 	ball.update(deltaTime,terrain.getCenterChunk().getObjectsNode());
 	//ball.drawAxis();
 	ball.drawBoundingBox();
-	//Ball Coordiantes to terrain offset. switches when at center
-	float offsetX = ball.m_Ball.translation().X >= 0 ?  floor(ball.m_Ball.translation().X / (CHUNKSIZE - 1)) : ceil(ball.m_Ball.translation().X / (CHUNKSIZE - 1));
-	float offsetZ = ball.m_Ball.translation().Z >= 0 ? floor(ball.m_Ball.translation().Z / (CHUNKSIZE - 1)) : ceil(ball.m_Ball.translation().Z / (CHUNKSIZE - 1));
-	terrain.setTerrainCenter(offsetX, offsetZ);
+	//Ball Coordiantes to terrain offset.
+	Vector offsets = getOffsets(ball.m_Ball.translation());
+	terrain.setTerrainCenter(offsets.X, offsets.Z);
 
 	terrain.draw();
 	//terrain.drawBoundingBox();
@@ -264,4 +264,19 @@ void DrawScene() {
 
     glutSwapBuffers();
     glutPostRedisplay();
+}
+
+Vector getOffsets(Vector pos) {
+	Vector offs(0,0,0);
+	int xSign = sgn(pos.X);
+	int zSign = sgn(pos.Z);
+	if (abs(pos.X) > CHUNKSIZE / 2) {
+		offs.X = (floor((abs(pos.X) - CHUNKSIZE / 2) / CHUNKSIZE) + 1)*xSign;
+	}
+
+	if(abs(pos.Z) > CHUNKSIZE / 2) {
+		offs.Z = ((floor(abs(pos.Z) - CHUNKSIZE / 2) / CHUNKSIZE) + 1)*zSign;
+
+	}
+	return offs;
 }
