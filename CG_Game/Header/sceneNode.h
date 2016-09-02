@@ -42,7 +42,7 @@ public:
 	void addChild(SceneNode* pChild);
 	void removeChild(SceneNode* pChild);
 	void draw();
-	bool collision(BoundingBox TestBox);
+	SceneNode* collision(BoundingBox TestBox);
 
 protected:
 	void draw(SceneNode* pNode);

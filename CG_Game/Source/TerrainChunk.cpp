@@ -247,7 +247,7 @@ bool TerrainChunk::createObjects(std::vector<Model>* ModelVector, int ObjectCoun
 		ss << " ObjNr. " << i << " of TerrainChunk (" << this->terrainOffsetX << " , " << this->terrainOffsetZ << ") ";
 		std::string name = ss.str();
 
-		scale = 1;// randomFloat(0.5f, 4.0f);
+		scale = randomFloat(0.5f, 4.0f);
 		x = randomFloat(m_BoundingBox.Min.X, m_BoundingBox.Max.X);
 		z = randomFloat(m_BoundingBox.Min.Z, m_BoundingBox.Max.Z);
 		//6.28319 radian  = 360 Deg

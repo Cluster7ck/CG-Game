@@ -47,6 +47,7 @@ private:
 	void recalculateBoundingBox();
 	float straightForce;
 	float sideForce;
+	float scale;
 	PerlinNoise terrainNoise;
 	float speed;
 	int rotationX;

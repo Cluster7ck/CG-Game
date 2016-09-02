@@ -19,15 +19,16 @@ Ball::~Ball() {
 bool Ball::load(const char* BallModel, const Vector& StartPos) {
 	g_Model_ball.load(BallModel, false);
 	this->aimTarget = Vector(0, 0, 0);
+	scale = 1;
 	m_Ball.translation(StartPos);
-
+	
 	g_Model_ball.m_BoundingBox.Min.X += StartPos.X;
 	g_Model_ball.m_BoundingBox.Max.X += StartPos.X;
 	g_Model_ball.m_BoundingBox.Min.Y += StartPos.Y;
 	g_Model_ball.m_BoundingBox.Max.Y += StartPos.Y;
 	g_Model_ball.m_BoundingBox.Min.Z += StartPos.Z;
 	g_Model_ball.m_BoundingBox.Max.Z += StartPos.Z;
-
+	
 	return true;
 }
 
@@ -76,12 +77,27 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 	mTrans.m23 = newPos.Z;
 	BoundingBox checkBox = g_Model_ball.getBoundingBox() * m_Translation;
 	checkBox.draw();
-	if (chunkObjects->collision(checkBox)) {
+	SceneNode* collisionNode = chunkObjects->collision(checkBox);
+	Vector nodeScale(1, 1, 1);
+	bool collision = false;
+	if (collisionNode != NULL) {
+		collision = true;
+		nodeScale = collisionNode->getScaling();
+	}
+
+	if (nodeScale.X > 2) {
 		newPos.X = m_Ball.translation().X - newPos.X;
 		newPos.Y = m_Ball.translation().Y - newPos.Y;
 		newPos.Z = m_Ball.translation().Z - newPos.Z;
 	}
 	else {
+		if (collision) {
+			chunkObjects->removeChild(collisionNode);
+			delete collisionNode;
+			scale += 0.1 * nodeScale.X;
+		}
+		Matrix m_Scale;
+		m_Scale.scale(scale);
 		//(-x^2+1)*3 as rotation speed decline function
 		float rotationFactorStraight = 3 - 3 * pow(1 - straightForce, 2);
 		float rotationFactorSide = 3 - 3 * pow(1 - sideForce, 2);
@@ -91,11 +107,17 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 		//Transformation
 		m_Rotation = (rotX*rotZ);
 		m_Ball = (m_Ball.invert() * m_Rotation).invert();
-
+		
 		//Set new WorldPos
 		m_Ball.m03 = newPos.X;
 		m_Ball.m13 = newPos.Y;
 		m_Ball.m23 = newPos.Z;
+		if (scale != 1) {
+			m_Ball = m_Ball * m_Scale;
+			scale = 1;
+		}
+		
+		
 
 		recalculateBoundingBox();
 		//Camera transform

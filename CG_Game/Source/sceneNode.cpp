@@ -118,8 +118,8 @@ void SceneNode::draw(SceneNode *node) {
 		glMultMatrixf(node->getGlobalTransform());
 		node->getModel()->drawBuffer();
 		glPopMatrix();
-
-		node->getTransformedBoundingBox().draw();
+		//Super performance intesive
+		//node->getTransformedBoundingBox().draw();
 	}
 
 	std::set<SceneNode *>::iterator it;
@@ -136,22 +136,21 @@ BoundingBox SceneNode::getTransformedBoundingBox(){
 	return tempBox;
 }
 
-bool SceneNode::collision(BoundingBox TestBox) {
-	bool coll = false;
+SceneNode* SceneNode::collision(BoundingBox TestBox) {
+	SceneNode* collisionNode = NULL;
 	std::set<SceneNode *>::iterator it;
 	for (it = this->getChildren().begin(); it != this->getChildren().end(); ++it) {
 
-		coll = (*it)->getTransformedBoundingBox().collision(TestBox);
+		bool coll = (*it)->getTransformedBoundingBox().collision(TestBox);
 		if (coll == true) {
 			(*it)->getTransformedBoundingBox().draw();
-			break;
+			return *it;
 		}
 			
-		coll = (*it)->collision(TestBox);
-		//it->collision(*it);
-		if (coll == true)
-			break;
+		collisionNode = (*it)->collision(TestBox);
+		if (collisionNode != NULL)
+			return collisionNode;
 	}
 
-	return coll;
+	return collisionNode;
 }
