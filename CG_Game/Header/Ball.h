@@ -30,11 +30,14 @@ public:
 	float side = 0.0;
 
 	Matrix m_Ball;
+	Matrix wtf;
 	Matrix m_Rotation = Matrix(0.0f, 0.0f, 0.0f, 0.0f,
 								0.0f, 0.0f, 0.0f, 0.0f,
 								0.0f, 0.0f, 0.0f, 0.0f,
 								0.0f, 0.0f, 0.0f, 0.0f);
+	Matrix m_accRotation;
 	Matrix m_Translation;
+	Matrix m_accTranslation;
 	Ball(float speed, PerlinNoise terrainNoise);
 	~Ball();
 	bool load(const char* BallModel, const Vector& StartPos);
@@ -43,11 +46,14 @@ public:
 	void draw(float DeltaTime);
 	void drawAxis();
 	void drawBoundingBox();
+	BoundingBox getBoundingBox();
 private:
 	void recalculateBoundingBox();
+	void move(Vector NewPos);
 	float straightForce;
 	float sideForce;
 	float scale;
+	float accumulatedScale;
 	PerlinNoise terrainNoise;
 	float speed;
 	int rotationX;

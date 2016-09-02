@@ -20,15 +20,16 @@ bool Ball::load(const char* BallModel, const Vector& StartPos) {
 	g_Model_ball.load(BallModel, false);
 	this->aimTarget = Vector(0, 0, 0);
 	scale = 1;
+	accumulatedScale = 1;
 	m_Ball.translation(StartPos);
-	
-	g_Model_ball.m_BoundingBox.Min.X += StartPos.X;
+	m_accTranslation = m_Ball;
+	/*g_Model_ball.m_BoundingBox.Min.X += StartPos.X;
 	g_Model_ball.m_BoundingBox.Max.X += StartPos.X;
 	g_Model_ball.m_BoundingBox.Min.Y += StartPos.Y;
 	g_Model_ball.m_BoundingBox.Max.Y += StartPos.Y;
 	g_Model_ball.m_BoundingBox.Min.Z += StartPos.Z;
 	g_Model_ball.m_BoundingBox.Max.Z += StartPos.Z;
-	
+	*/
 	return true;
 }
 
@@ -66,16 +67,17 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 
 	Vector rotationAxisStraight(camDirSide.X, 0, camDirSide.Z);
 	Vector rotationAxisSide(camDirStraight.X, 0, camDirStraight.Z);
-
-	float deltaY = terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5 - m_Ball.translation().Y;
-	Vector newPos(m_Ball.translation().X + moveVector.X, terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + 0.5, m_Ball.translation().Z + moveVector.Z);
+	float distToGround = (getBoundingBox().Max.Y - getBoundingBox().Min.Y) / 2;
+	float deltaY = terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + distToGround - m_Ball.translation().Y;
+	Vector newPos(m_Ball.translation().X + moveVector.X, terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + distToGround, m_Ball.translation().Z + moveVector.Z);
 	m_Translation.translation(moveVector.X, deltaY, moveVector.Z);
+	
 	//COLLISION
 	Matrix mTrans = m_Ball;
 	mTrans.m03 = newPos.X;
 	mTrans.m13 = newPos.Y;
 	mTrans.m23 = newPos.Z;
-	BoundingBox checkBox = g_Model_ball.getBoundingBox() * m_Translation;
+	BoundingBox checkBox = getBoundingBox() * m_Translation;
 	checkBox.draw();
 	SceneNode* collisionNode = chunkObjects->collision(checkBox);
 	Vector nodeScale(1, 1, 1);
@@ -85,9 +87,9 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 		nodeScale = collisionNode->getScaling();
 	}
 
-	if (nodeScale.X > 2) {
+	if (nodeScale.X > accumulatedScale) {
 		newPos.X = m_Ball.translation().X - newPos.X;
-		newPos.Y = m_Ball.translation().Y - newPos.Y;
+		newPos.Y = m_Ball.translation().Y - (newPos.Y);
 		newPos.Z = m_Ball.translation().Z - newPos.Z;
 	}
 	else {
@@ -95,9 +97,10 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 			chunkObjects->removeChild(collisionNode);
 			delete collisionNode;
 			scale += 0.1 * nodeScale.X;
+			accumulatedScale *= (1 + 0.1 * nodeScale.X);
 		}
-		Matrix m_Scale;
-		m_Scale.scale(scale);
+		m_accTranslation = m_accTranslation * m_Translation;
+
 		//(-x^2+1)*3 as rotation speed decline function
 		float rotationFactorStraight = 3 - 3 * pow(1 - straightForce, 2);
 		float rotationFactorSide = 3 - 3 * pow(1 - sideForce, 2);
@@ -106,6 +109,7 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 
 		//Transformation
 		m_Rotation = (rotX*rotZ);
+		m_accRotation = m_accRotation * m_Rotation;
 		m_Ball = (m_Ball.invert() * m_Rotation).invert();
 		
 		//Set new WorldPos
@@ -113,13 +117,12 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 		m_Ball.m13 = newPos.Y;
 		m_Ball.m23 = newPos.Z;
 		if (scale != 1) {
-			m_Ball = m_Ball * m_Scale;
+			Matrix sm;
+			m_Ball = m_Ball * sm.scale(scale);
+
 			scale = 1;
 		}
-		
-		
 
-		recalculateBoundingBox();
 		//Camera transform
 		g_Camera.setTarget(m_Ball.translation());
 		g_Camera.setPosition(m_Translation * g_Camera.getPosition());
@@ -133,6 +136,10 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 	}*/
 	draw(DeltaTime);
 	
+}
+
+void Ball::move(Vector NewPos) {
+
 }
 
 void Ball::draw(float DeltaTime) {
@@ -185,11 +192,23 @@ void Ball::drawAxis() {
 }
 
 void Ball::drawBoundingBox() {
-	g_Model_ball.drawBoundingBox();
+	getBoundingBox().draw();
 }
 
 void Ball::recalculateBoundingBox() {
-	g_Model_ball.setBoundingBox(g_Model_ball.getBoundingBox()*m_Translation);
+	BoundingBox tempBox = g_Model_ball.getBoundingBox();
+
+	tempBox = tempBox*m_Translation;
+	
+	g_Model_ball.setBoundingBox(tempBox);
+}
+
+BoundingBox Ball::getBoundingBox() {
+	BoundingBox tempBox = g_Model_ball.getBoundingBox();
+	Matrix sm;
+	tempBox = tempBox*sm.scale(accumulatedScale);
+	tempBox = tempBox*m_accTranslation;
+	return tempBox;
 }
 
 float clamp(float n, float lower, float upper) {
