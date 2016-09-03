@@ -20,24 +20,8 @@ void replaceFilename(const char* Filename, const char* replacer, char* destinati
 	strcpy(backslashPointer + 1, replacer);
 }
 
-float cosinus(int degree) {
-	float radian = degree * M_PI / 180.0f;
-	float cosinus = cos(radian);
-
-	if (degree == 90 || degree == -90) {
-		cosinus = 0.0f;
-	}
-
-	return cosinus;
-}
-
-float sinus(int degree) {
-	float radian = degree * M_PI / 180.0f;
-	float sinus = sin(radian);
-
-	if (degree == 180 || degree == -180) {
-		sinus = 0.0f;
-	}
-
-	return sinus;
+Vector rotateVectorByAxis(Vector RotVector, Vector Axis, float degree) {
+	Matrix rotM;
+	rotM.rotationAxis(Axis, degree);
+	return rotM * RotVector;
 }

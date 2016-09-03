@@ -15,6 +15,7 @@
 
 #include "Matrix.h"
 #include "vector.h"
+#include "utility_len.h"
 
 extern const unsigned int g_WindowWidth;
 extern const unsigned int g_WindowHeight;
@@ -30,6 +31,7 @@ public:
     Vector getUp();
     
     void setPosition( const Vector& Pos);
+	void setPosition(const Vector& Pos, float MinY);
     void setTarget( const Vector& Target);
     void setUp( const Vector& Up);
 
@@ -46,6 +48,7 @@ protected:
     void pan( float dx, float dy);
     void zoom( float dz);
 	void rotateAroundObject(Matrix Object, float x, float y);
+	void zoomToObject(Matrix Object, float x, float y);
     void rotate( float x, float y );
     Vector getVSpherePos( float x, float y);
     Vector rotateAxisAngle( Vector v, Vector n, float a);

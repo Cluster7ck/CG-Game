@@ -10,9 +10,8 @@
 #define vector_h
 
 #define _USE_MATH_DEFINES
-#include "utility_len.h"
 #include <stdio.h>
-#include <cmath> 
+#include <cmath>
 
 class Vector {
 public:
@@ -28,6 +27,7 @@ public:
 	Vector rotationX(int degree) const;
 	Vector rotationY(int degree) const;
 	Vector rotationZ(int degree) const;
+	Vector rotateAxis(Vector Axis, int degree) const;
 	bool operator==(const Vector& v) const;
 	bool operator!=(const Vector& v) const;
     Vector operator+(const Vector& v) const;

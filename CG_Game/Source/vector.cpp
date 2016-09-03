@@ -177,3 +177,61 @@ Vector Vector::rotationZ(int degree) const {
 
 	return nv;
 }
+
+Vector Vector::rotateAxis(Vector Axis, int degree) const {
+	/*Vector nv;
+	Vector v = (*this);
+	Vector prllComp = Axis * v.dot(Axis);
+	Vector perpComp = v - prllComp;
+	Vector perpendicularCompRot = perpComp * cosinus(degree) + Axis.cross(perpComp) * cosinus(degree);
+	Vector vRot = prllComp + perpendicularCompRot;
+
+	return vRot;
+	*/
+	Vector v = (*this);
+	float c = cosinus(degree);
+	float s = sinus(degree);
+	float C = 1.0 - c;
+
+	float Q[3][3];
+	Q[0][0] = Axis.X * Axis.X * C + c;
+	Q[0][1] = Axis.Y * Axis.X * C + Axis.Z * s;
+	Q[0][2] = Axis.Z * Axis.X * C - Axis.Y * s;
+
+	Q[1][0] = Axis.Y * Axis.X * C - Axis.Z * s;
+	Q[1][1] = Axis.Y * Axis.Y * C + c;
+	Q[1][2] = Axis.Z * Axis.Y * C + Axis.X * s;
+
+	Q[2][0] = Axis.X * Axis.Z * C + Axis.Y * s;
+	Q[2][1] = Axis.Z * Axis.Y * C - Axis.X * s;
+	Q[2][2] = Axis.Z * Axis.Z * C + c;
+
+	v.X = v.X * Q[0][0] + v.X * Q[0][1] + v.X * Q[0][2];
+	v.Y = v.Y * Q[1][0] + v.Y * Q[1][1] + v.Y * Q[1][2];
+	v.Z = v.Z * Q[2][0] + v.Z * Q[2][1] + v.Z * Q[2][2];
+	return v;
+}
+
+
+
+float cosinus(int degree) {
+	float radian = degree * M_PI / 180.0f;
+	float cosinus = cos(radian);
+
+	if (degree == 90 || degree == -90) {
+		cosinus = 0.0f;
+	}
+
+	return cosinus;
+}
+
+float sinus(int degree) {
+	float radian = degree * M_PI / 180.0f;
+	float sinus = sin(radian);
+
+	if (degree == 180 || degree == -180) {
+		sinus = 0.0f;
+	}
+
+	return sinus;
+}

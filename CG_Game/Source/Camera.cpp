@@ -56,6 +56,16 @@ void Camera::setPosition( const Vector& Pos)
     m_Panning = m_Rotation = m_Zoom = Vector(0,0,0);
 }
 
+void Camera::setPosition(const Vector& Pos, float MinY)
+{
+	Vector pos;
+	pos = Pos;
+	if (pos.Y < MinY)
+		pos.Y = MinY;
+	m_Position = pos;
+	m_Panning = m_Rotation = m_Zoom = Vector(0, 0, 0);
+}
+
 void Camera::setTarget( const Vector& Target)
 {
     m_Target = Target;
@@ -78,7 +88,7 @@ void Camera::mouseInput(Matrix Object, int x, int y, int Button, int State)
 			rotateAroundObject(Object, (float)x, (float)y);
 		}
 		else if (Button == GLUT_RIGHT_BUTTON) {
-			rotate((float)x, (float)y);
+			zoomToObject(Object,(float)x, (float)y);
 		}
     }
     else
@@ -136,7 +146,8 @@ void Camera::rotateAroundObject(Matrix Object, float x, float y) {
 	}
 
 	Vector oldDirection = Object.translation() - getPosition();
-	Vector newDirection = (getPosition() - Object.translation()).rotationY(angle);
+	Vector rotVec = rotateVectorByAxis((getPosition() - Object.translation()), Vector(0,1,0), angle*0.02f);
+	Vector newDirection = rotVec;//(getPosition() - Object.translation()).rotateAxis(Vector(0,1,0),angle);
 
 	Matrix mt1, mt2;
 	mt1.translation((oldDirection).X, 0, (oldDirection).Z);
@@ -147,6 +158,38 @@ void Camera::rotateAroundObject(Matrix Object, float x, float y) {
 	m_LastMouseX = x;
 	m_LastMouseY = y;
 }
+
+void Camera::zoomToObject(Matrix Object, float x, float y) {
+	Vector po = getVSpherePos((float)m_LastMouseX, m_LastMouseY);
+	Vector pn = getVSpherePos(x, y);
+
+	float difference = pn.Z - po.Z;
+	int angle = 0;
+
+	if (difference > 0.0f) {
+		//links rotieren
+		angle = 1;
+	}
+	else if (difference < 0.0f) {
+		//rechts rotieren
+		angle = -1;
+	}
+
+	Vector oldDirection = Object.translation() - getPosition();
+	Vector axis = (getPosition() - Object.translation()).cross(m_Up);
+	Vector rotVec = rotateVectorByAxis((getPosition() - Object.translation()), axis, angle*0.02f);
+	Vector newDirection = rotVec;//(getPosition() - Object.translation()).rotateAxis(Vector(0,1,0),angle);
+
+	Matrix mt1, mt2;
+	mt1.translation((oldDirection).X, 0, (oldDirection).Z);
+	mt2.translation((newDirection).X, 0, (newDirection).Z);
+
+	setPosition(mt1 * mt2 * getPosition());
+
+	m_LastMouseX = x;
+	m_LastMouseY = y;
+}
+
 
 void Camera::pan( float dx, float dy)
 {

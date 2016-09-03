@@ -154,7 +154,7 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 
 		//Camera transform
 		g_Camera.setTarget(m_Ball.translation());
-		g_Camera.setPosition(m_Translation * g_Camera.getPosition());
+		g_Camera.setPosition(m_Translation * g_Camera.getPosition()); //, terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z)
 	}
 
 	/*
