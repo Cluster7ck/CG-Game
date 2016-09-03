@@ -7,7 +7,7 @@
 #include "TerrainChunk.h"
 #include "utility_len.h"
 
-#define CHUNKSIZE 200
+#define CHUNKSIZE 80
 #define PICKUPS_PER_CHUNK  20
 
 struct TerrainOffset {

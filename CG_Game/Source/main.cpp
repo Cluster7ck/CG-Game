@@ -13,8 +13,8 @@
 #include "../Header/Ball.h"
 #include "../Header/Terrain.h"
 
-#define CHUNKS_COUNT 49
-#define PICKUP_COUNT 3
+#define CHUNKS_COUNT 25
+#define PICKUP_COUNT 4
 
 // window x and y size
 const unsigned int g_WindowWidth=1400;
@@ -26,14 +26,14 @@ const Vector g_LightPos = Vector( 0,64,0);
 float deltaTime = 0;
 int elapsedTimeLastFrame = 0;
 
-char* models[PICKUP_COUNT] = { "Ressourcen/ball.obj","Ressourcen/rock.obj","Ressourcen/tree.obj" };
+char* models[PICKUP_COUNT] = { "Ressourcen/ball.obj","Ressourcen/Baum1.obj","Ressourcen/Baum2.obj","Ressourcen/Baum3.obj" };
 //Terrain
-PerlinNoise noise(0.5, 0.042, 40, 1, 1400);
+PerlinNoise noise(0.5, 0.042, 40, 1, 666);
 std::vector<Model> pickups;
 Terrain terrain(CHUNKS_COUNT, noise);
 
 Camera g_Camera;
-Ball ball(2,noise);
+Ball ball(15,noise);
 
 float keyStore[4];
 
@@ -123,28 +123,6 @@ void SetupDefaultGLSettings() {
     glEnable(GL_LIGHT0);
 }
 
-void DrawGroundGrid() {
-    const float GridSize=10.0f;
-    const unsigned int GridSegments=20;
-    const float GridStep=GridSize/(float)GridSegments;
-    const float GridOrigin=-GridSize*0.5f;
-    
-    glDisable( GL_LIGHTING);
-    glBegin(GL_LINES);
-        glColor3f(1.0f, 1.0f, 1.0f);
-        for( unsigned int i=0; i<GridSegments+1; i++) {
-            float itpos=GridOrigin + GridStep*(float)i;
-            glVertex3f(itpos, 0, GridOrigin);
-            glVertex3f(itpos, 0, GridOrigin+GridSize);
-        
-            glVertex3f(GridOrigin, 0, itpos);
-            glVertex3f(GridOrigin+GridSize, 0, itpos);
-
-        }
-    glEnd();
-    glEnable( GL_LIGHTING);
-}
-
 void MouseCallback(int Button, int State, int x, int y) {
 	g_MouseButton = Button;
 	g_MouseState = State;
@@ -184,7 +162,7 @@ void KeyboardCallback(unsigned char key, int x, int y) {
 		x = y = 0;
 		break;
 	}
-	ball.steer(keyStore[0] + keyStore[1], keyStore[2] + keyStore[3]);
+	ball.steer(keyStore[0] + keyStore[1], keyStore[2] + keyStore[3],false);
 }
 
 void KeyboardUpCallback(unsigned char key, int x, int y) {
@@ -206,7 +184,8 @@ void KeyboardUpCallback(unsigned char key, int x, int y) {
 		x = y = 0;
 		break;
 	}
-	//ball.steer(keyStore[0] + keyStore[1], keyStore[2] + keyStore[3]);
+	ball.steer(keyStore[0] + keyStore[1], keyStore[2] + keyStore[3],true);
+	//ball.steer(keyStore[0] + keyStore[1], keyStore[2] + keyStore[3], false);
 }
 
 void SpecialKeyboardCallback(int key, int x, int y) {
@@ -234,7 +213,6 @@ void SpecialKeyboardCallback(int key, int x, int y) {
 		x = y = 0;
 		break;
 	}
-	terrain.setTerrainCenter(offsetX, offsetY);
 }
 void DrawScene() {
 	deltaTime = (glutGet(GLUT_ELAPSED_TIME) - elapsedTimeLastFrame) / 1000.0f;
@@ -244,8 +222,6 @@ void DrawScene() {
 
     glLoadIdentity();
     g_Camera.apply();
-
-	DrawGroundGrid();
     
     GLfloat lpos[4];
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;

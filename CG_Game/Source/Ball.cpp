@@ -23,6 +23,9 @@ bool Ball::load(const char* BallModel, const Vector& StartPos) {
 	accumulatedScale = 1;
 	m_Ball.translation(StartPos);
 	m_accTranslation = m_Ball;
+
+	this->straight = 0;
+	this->side = 0;
 	/*g_Model_ball.m_BoundingBox.Min.X += StartPos.X;
 	g_Model_ball.m_BoundingBox.Max.X += StartPos.X;
 	g_Model_ball.m_BoundingBox.Min.Y += StartPos.Y;
@@ -33,7 +36,28 @@ bool Ball::load(const char* BallModel, const Vector& StartPos) {
 	return true;
 }
 
-void Ball::steer(float ForwardBackward, float LeftRight) {
+void Ball::steer(float ForwardBackward, float LeftRight, bool upCallback) {
+	/*
+	if (upCallback) {
+		if (side != 0 && straight != 0){
+			if (LeftRight == 0) {
+				side = 0;
+				sideForce = 0;
+				straightForce = 1;
+			}
+			else if (ForwardBackward == 0) {
+				straight = 0;
+				straightForce = 0;
+				sideForce = 1;
+			}
+		}	
+	}
+	else {
+		this->straight = ForwardBackward;
+		this->side = LeftRight;
+		sideForce = 1;
+		straightForce = 1;
+	}*/
 	this->straight = ForwardBackward;
 	this->side = LeftRight;
 	sideForce = 1;
@@ -42,45 +66,49 @@ void Ball::steer(float ForwardBackward, float LeftRight) {
 
 void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 	
-	Matrix transM, rotX, rotZ;
 	static float accumulatedTime = 0;
 	accumulatedTime += DeltaTime;
-	straightForce -= DeltaTime * 0.5;
-	sideForce -= DeltaTime * 0.5;
+	straightForce -= DeltaTime * 0.5f;
+	sideForce -= DeltaTime * 0.5f;
 	straightForce = straightForce < 0 ? 0 : straightForce;
 	sideForce = sideForce < 0 ? 0 : sideForce;
 
 	Vector camDirStraight = m_Ball.translation() - g_Camera.getPosition();
 	Vector camDirSide = camDirStraight.rotationY(90);
 
-	Vector moveVector = (camDirStraight * straight * straightForce) + (camDirSide * side * sideForce);
-	Vector forwardVector = camDirStraight * straight * straightForce;
-	Vector sideVector = (camDirSide * side * sideForce);
-
+	Vector moveVector = (camDirStraight * straight) + (camDirSide * side);
+	Vector forwardVector = (camDirStraight * straight).normalize();
+	Vector sideVector = (camDirSide * side).normalize();
+	moveVector = Vector(moveVector.X, 0, moveVector.Z);
+	if (moveVector != Vector(0, 0, 0))
+		moveVector.normalize();
 	//shorten vector if diagonal
 	if (straight != 0 && side != 0) {
-		moveVector = moveVector * speed * DeltaTime * 0.7f;
+		moveVector = moveVector * speed * DeltaTime * straightForce * sideForce;
 	}
 	else {
-		moveVector = moveVector * speed  * DeltaTime;
+		if (straight != 0) {
+			moveVector = moveVector * speed  * DeltaTime * straightForce;
+		}
+		else {
+			moveVector = moveVector * speed  * DeltaTime * sideForce;
+		}
 	}
 
 	Vector rotationAxisStraight(camDirSide.X, 0, camDirSide.Z);
 	Vector rotationAxisSide(camDirStraight.X, 0, camDirStraight.Z);
+	
 	float distToGround = (getBoundingBox().Max.Y - getBoundingBox().Min.Y) / 2;
 	float deltaY = terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + distToGround - m_Ball.translation().Y;
 	Vector newPos(m_Ball.translation().X + moveVector.X, terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + distToGround, m_Ball.translation().Z + moveVector.Z);
 	m_Translation.translation(moveVector.X, deltaY, moveVector.Z);
 	
 	//COLLISION
-	Matrix mTrans = m_Ball;
-	mTrans.m03 = newPos.X;
-	mTrans.m13 = newPos.Y;
-	mTrans.m23 = newPos.Z;
 	BoundingBox checkBox = getBoundingBox() * m_Translation;
 	checkBox.draw();
 	SceneNode* collisionNode = chunkObjects->collision(checkBox);
 	Vector nodeScale(1, 1, 1);
+
 	bool collision = false;
 	if (collisionNode != NULL) {
 		collision = true;
@@ -104,6 +132,7 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 		//(-x^2+1)*3 as rotation speed decline function
 		float rotationFactorStraight = 3 - 3 * pow(1 - straightForce, 2);
 		float rotationFactorSide = 3 - 3 * pow(1 - sideForce, 2);
+		Matrix rotX, rotZ;
 		rotX.rotationAxis(rotationAxisStraight, 0.5* M_PI  * straight * DeltaTime * rotationFactorStraight);
 		rotZ.rotationAxis(rotationAxisSide, 0.5* M_PI * -side * DeltaTime * rotationFactorSide);
 
@@ -143,14 +172,11 @@ void Ball::move(Vector NewPos) {
 }
 
 void Ball::draw(float DeltaTime) {
-	
 	glPushMatrix();
 	glMultMatrixf(m_Ball);
 	g_Model_ball.drawBuffer();
 	glPopMatrix();
 	drawAxis();
-	
-	//g_Model_ball.drawBuffer();
 }
 
 void Ball::drawAxis() {
@@ -193,14 +219,6 @@ void Ball::drawAxis() {
 
 void Ball::drawBoundingBox() {
 	getBoundingBox().draw();
-}
-
-void Ball::recalculateBoundingBox() {
-	BoundingBox tempBox = g_Model_ball.getBoundingBox();
-
-	tempBox = tempBox*m_Translation;
-	
-	g_Model_ball.setBoundingBox(tempBox);
 }
 
 BoundingBox Ball::getBoundingBox() {

@@ -30,7 +30,6 @@ public:
 	float side = 0.0;
 
 	Matrix m_Ball;
-	Matrix wtf;
 	Matrix m_Rotation = Matrix(0.0f, 0.0f, 0.0f, 0.0f,
 								0.0f, 0.0f, 0.0f, 0.0f,
 								0.0f, 0.0f, 0.0f, 0.0f,
@@ -41,14 +40,13 @@ public:
 	Ball(float speed, PerlinNoise terrainNoise);
 	~Ball();
 	bool load(const char* BallModel, const Vector& StartPos);
-	void steer(float ForwardBackward, float LeftRight);
+	void steer(float ForwardBackward, float LeftRight, bool upCallback);
 	void update(float DeltaTime, SceneNode* chunkObjects);
 	void draw(float DeltaTime);
 	void drawAxis();
 	void drawBoundingBox();
 	BoundingBox getBoundingBox();
 private:
-	void recalculateBoundingBox();
 	void move(Vector NewPos);
 	float straightForce;
 	float sideForce;
