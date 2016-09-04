@@ -88,7 +88,7 @@ void Camera::mouseInput(Matrix Object, int x, int y, int Button, int State)
 			rotateAroundObject(Object, (float)x, (float)y);
 		}
 		else if (Button == GLUT_RIGHT_BUTTON) {
-			zoomToObject(Object,(float)x, (float)y);
+			rotate((float)x, (float)y);
 		}
     }
     else
@@ -122,8 +122,8 @@ void Camera::zoom(float dz) {
 		m_Zoom = aDir * (Dist - 1.0f);
 		return;
 	}
-	else if (Dist - dz >= 8.0f) {
-		m_Zoom = aDir * (Dist - 8.0f);
+	else if (Dist - dz >= 20.0f) {
+		m_Zoom = aDir * (Dist - 20.0f);
 		return;
 	}
 	m_Zoom = aDir * dz;

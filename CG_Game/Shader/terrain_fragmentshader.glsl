@@ -40,27 +40,30 @@ void main(void) {
 	//float HeightRemapped = (WorldPos.z - MinHeight) * 1/ (MaxHeight-MinHeight);
 	float HeightRemapped = map(PointWorldPos.y,MinHeight,MaxHeight,0,1);
 	vec4 DiffuseTexColor;
-	vec4 TopColor = vec4(0.2,0.6,0,0);
-	vec4 MidColor = vec4(1.0,0,1.0,0);
-	vec4 BotColor =  vec4(0.6,0.8,0,0);
+	vec4 TopColor = vec4(0.1,0.4,0.1,0);
+	vec4 MidColor = vec4(0,0.6,0,0);
+	vec4 MidColor2 = vec4(0.6,0.8,0,0);
+	vec4 BotColor =  vec4(0.8,0.6,0,0);
+	
 	DiffuseTexColor = mix (MidColor, TopColor, HeightRemapped);
 	DiffuseTexColor = mix (BotColor, DiffuseTexColor, HeightRemapped);
 	
 	//DiffuseTexColor = mix(BotColor, MidColor, HeightRemapped);
 	//DiffuseTexColor = mix(DiffuseTexColor, TopColor, HeightRemapped);
-	/*
-	if(HeightRemapped < 0.33f ){
-		DiffuseTexColor = vec4(1.0,1.0,0,0);
+	
+	if(HeightRemapped < 0.5f ){
+		HeightRemapped = map(HeightRemapped,0,0.5f,0,1);
+		DiffuseTexColor = mix (BotColor, MidColor2, HeightRemapped);
+	}
+	else if(HeightRemapped < 0.75f){
+		HeightRemapped = map(HeightRemapped,0.5f,0.75f,0,1);
+		DiffuseTexColor = mix (MidColor2, MidColor, HeightRemapped);
 	}
 	else {
-			if(HeightRemapped < 0.66f){
-				DiffuseTexColor = vec4(0,1.0,1.0,0);
-			}
-			else{
-				DiffuseTexColor = vec4(1.0,0,1.0,0);
-			}   
+		HeightRemapped = map(HeightRemapped,0.75f,1,0,1);
+		DiffuseTexColor = mix (MidColor, TopColor, HeightRemapped);
 	}
-	*/
+	
     DiffuseComponent *= vec3(DiffuseTexColor);
     vec3 AmbientComponent = AmbientColor * vec3(DiffuseTexColor);
     gl_FragColor = vec4(DiffuseComponent + SpecularComponent + AmbientComponent, 0);

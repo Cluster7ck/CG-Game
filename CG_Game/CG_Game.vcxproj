@@ -158,6 +158,7 @@
     <ClInclude Include="Header\scene.h" />
     <ClInclude Include="Header\sceneNode.h" />
     <ClInclude Include="Header\shaderprogram.h" />
+    <ClInclude Include="Header\SkyBox.h" />
     <ClInclude Include="Header\Terrain.h" />
     <ClInclude Include="Header\TerrainChunk.h" />
     <ClInclude Include="Header\Texture.h" />
