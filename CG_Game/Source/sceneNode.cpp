@@ -143,7 +143,7 @@ SceneNode* SceneNode::collision(BoundingBox TestBox) {
 
 		bool coll = (*it)->getTransformedBoundingBox().collision(TestBox);
 		if (coll == true) {
-			(*it)->getTransformedBoundingBox().draw();
+			//(*it)->getTransformedBoundingBox().draw();
 			return *it;
 		}
 			

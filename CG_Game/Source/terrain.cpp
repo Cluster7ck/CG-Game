@@ -89,7 +89,7 @@ void Terrain::draw() {
 					it->second.draw();
 					m_ShaderProgram.deactivate();
 					it->second.getObjectsNode()->draw();
-					it->second.drawBoundingBox();
+					//it->second.drawBoundingBox();
 				}
 			}
 			else{

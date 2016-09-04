@@ -13,8 +13,9 @@
 #include "../Header/Ball.h"
 #include "../Header/Terrain.h"
 #include "../Header/SkyBox.h"
+#include "../Header//GLError.h"
 
-#define CHUNKS_COUNT 25
+#define CHUNKS_COUNT 49
 #define PICKUP_COUNT 4
 
 // window x and y size
@@ -34,7 +35,7 @@ std::vector<Model> pickups;
 Terrain terrain(CHUNKS_COUNT, noise);
 
 Camera g_Camera;
-SkyBox* skybox; ;
+SkyBox skybox;
 Ball ball(15,noise);
 
 float keyStore[4];
@@ -72,7 +73,7 @@ int main(int argc, char * argv[]) {
     glutMotionFunc(MouseMoveCallback);
 	glutSpecialFunc(SpecialKeyboardCallback);
 
-	skybox = new SkyBox("Shader/skybox_vert.glsl", "Shader/skybox_frag.glsl");
+	skybox = SkyBox("Shader/skybox_vert.glsl", "Shader/skybox_frag.glsl");
 	for (int i = 0; i < PICKUP_COUNT; i++) {
 		Model tempModel;
 		pickups.push_back(tempModel);
@@ -222,18 +223,21 @@ void DrawScene() {
 	elapsedTimeLastFrame = glutGet(GLUT_ELAPSED_TIME);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glLoadIdentity();
     g_Camera.apply();
 	
     GLfloat lpos[4];
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
-	
-	skybox->draw(g_Camera.getProjectionMatrix(), g_Camera.getViewMatrix());
+
+	//skybox.m_Skybox = skybox.m_Skybox * g_Camera.getPosition();
+	Matrix view = g_Camera.getViewMatrix();
+	view.m03 = view.m13 = view.m23 = 0;
+	view = view.identity();
+	skybox.draw(g_Camera.getProjectionMatrix(), view, g_Camera.getPosition(),g_Camera);
 	ball.update(deltaTime,terrain.getCenterChunk().getObjectsNode());
 	//ball.drawAxis();
-	ball.drawBoundingBox();
+	//ball.drawBoundingBox();
 	//Ball Coordiantes to terrain offset.
 	Vector offsets = getOffsets(ball.m_Ball.translation());
 	terrain.setTerrainCenter(offsets.X, offsets.Z);

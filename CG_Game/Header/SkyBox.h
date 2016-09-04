@@ -13,6 +13,7 @@ With tutorial http://learnopengl.com/#!Advanced-OpenGL/Cubemaps
 #include "Texture.h"
 #include "ShaderProgram.h"
 #include "GLError.h"
+#include "Camera.h"
 
 class SkyBox
 {
@@ -22,8 +23,8 @@ public:
 	bool loadSkybox();
 	void createCube();
 	void apply() const;
-	void draw(Matrix proj, Matrix view);
-
+	void draw(Matrix proj, Matrix view, Vector pos, Camera cam);
+	Matrix m_Skybox;
 private:
 	std::vector<std::string> TextureFilenames;
 	ShaderProgram m_ShaderProgram;

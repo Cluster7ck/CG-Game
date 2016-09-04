@@ -18,7 +18,7 @@
 #include "GameObject.h"
 #include "sceneNode.h"
 
-#define CHUNKSIZE 80
+#define CHUNKSIZE 400
 
 struct TerrainVertex {
 	Vector Pos;

@@ -65,14 +65,15 @@ void Ball::steer(float ForwardBackward, float LeftRight, bool upCallback) {
 }
 
 void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
-	
+	Matrix transM;
 	static float accumulatedTime = 0;
 	accumulatedTime += DeltaTime;
+	/*
 	straightForce -= DeltaTime * 0.5f;
 	sideForce -= DeltaTime * 0.5f;
 	straightForce = straightForce < 0 ? 0 : straightForce;
 	sideForce = sideForce < 0 ? 0 : sideForce;
-
+	*/
 	Vector camDirStraight = m_Ball.translation() - g_Camera.getPosition();
 	Vector camDirSide = camDirStraight.rotationY(90);
 
@@ -84,14 +85,14 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 		moveVector.normalize();
 	//shorten vector if diagonal
 	if (straight != 0 && side != 0) {
-		moveVector = moveVector * speed * DeltaTime * straightForce * sideForce;
+		moveVector = moveVector * speed * DeltaTime ;
 	}
 	else {
 		if (straight != 0) {
-			moveVector = moveVector * speed  * DeltaTime * straightForce;
+			moveVector = moveVector * speed  * DeltaTime;
 		}
 		else {
-			moveVector = moveVector * speed  * DeltaTime * sideForce;
+			moveVector = moveVector * speed  * DeltaTime;
 		}
 	}
 
@@ -101,10 +102,10 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 	float distToGround = (getBoundingBox().Max.Y - getBoundingBox().Min.Y) / 2;
 	float deltaY = terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + distToGround - m_Ball.translation().Y;
 	Vector newPos(m_Ball.translation().X + moveVector.X, terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z) + distToGround, m_Ball.translation().Z + moveVector.Z);
-	m_Translation.translation(moveVector.X, deltaY, moveVector.Z);
+	transM.translation(moveVector.X, deltaY, moveVector.Z);
 	
 	//COLLISION
-	BoundingBox checkBox = getBoundingBox() * m_Translation;
+	BoundingBox checkBox = getBoundingBox() * transM;
 	checkBox.draw();
 	SceneNode* collisionNode = chunkObjects->collision(checkBox);
 	Vector nodeScale(1, 1, 1);
@@ -127,19 +128,19 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 			scale += 0.1 * nodeScale.X;
 			accumulatedScale *= (1 + 0.1 * nodeScale.X);
 		}
-		m_accTranslation = m_accTranslation * m_Translation;
+		m_accTranslation = m_accTranslation * transM;
 
 		//(-x^2+1)*3 as rotation speed decline function
-		float rotationFactorStraight = 3 - 3 * pow(1 - straightForce, 2);
-		float rotationFactorSide = 3 - 3 * pow(1 - sideForce, 2);
-		Matrix rotX, rotZ;
-		rotX.rotationAxis(rotationAxisStraight, 0.5* M_PI  * straight * DeltaTime * rotationFactorStraight);
-		rotZ.rotationAxis(rotationAxisSide, 0.5* M_PI * -side * DeltaTime * rotationFactorSide);
+		//float rotationFactorStraight = 3 - 3 * pow(1 - straightForce, 2);
+		//float rotationFactorSide = 3 - 3 * pow(1 - sideForce, 2);
+		Matrix rotX, rotZ, fullRotation;
+		rotX.rotationAxis(rotationAxisStraight, 0.5* M_PI  * straight * DeltaTime * 3);
+		rotZ.rotationAxis(rotationAxisSide, 0.5* M_PI * -side * DeltaTime * 3);
 
 		//Transformation
-		m_Rotation = (rotX*rotZ);
-		m_accRotation = m_accRotation * m_Rotation;
-		m_Ball = (m_Ball.invert() * m_Rotation).invert();
+		fullRotation = (rotX*rotZ);
+		m_accRotation = m_accRotation * fullRotation;
+		m_Ball = (m_Ball.invert() * fullRotation).invert();
 		
 		//Set new WorldPos
 		m_Ball.m03 = newPos.X;
@@ -154,7 +155,7 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 
 		//Camera transform
 		g_Camera.setTarget(m_Ball.translation());
-		g_Camera.setPosition(m_Translation * g_Camera.getPosition()); //, terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z)
+		g_Camera.setPosition(transM * g_Camera.getPosition()); //, terrainNoise.GetHeight(m_Ball.translation().X, m_Ball.translation().Z)
 	}
 
 	/*
@@ -167,16 +168,13 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 	
 }
 
-void Ball::move(Vector NewPos) {
-
-}
 
 void Ball::draw(float DeltaTime) {
 	glPushMatrix();
 	glMultMatrixf(m_Ball);
 	g_Model_ball.drawBuffer();
 	glPopMatrix();
-	drawAxis();
+	//drawAxis();
 }
 
 void Ball::drawAxis() {

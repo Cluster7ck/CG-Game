@@ -17,15 +17,26 @@ SkyBox::SkyBox(const char* VertexShader, const char* FragmentShader)
 	TextureFilenames.push_back("Ressourcen/top.bmp");
 	TextureFilenames.push_back("Ressourcen/bottom.bmp");
 	TextureFilenames.push_back("Ressourcen/back.bmp");
-	TextureFilenames.push_back("Ressourcen/front.bmp");
+	TextureFilenames.push_back("Ressourcen/sky2.bmp");
 
 	createCube();
 	loadSkybox();
 
-	if (!m_ShaderProgram.load(VertexShader, FragmentShader)) {
-		std::cout << "Loading shader failed" << std::endl;
-		exit(-1);
+	std::string compileErrors;
+	if (FragmentShader == NULL && VertexShader != NULL) {
+		m_ShaderProgram.loadVertexShader(VertexShader);
+		m_ShaderProgram.compile(&compileErrors);
+
 	}
+	else if (FragmentShader != NULL && VertexShader == NULL) {
+		m_ShaderProgram.loadFragmentShader(FragmentShader);
+		m_ShaderProgram.compile(&compileErrors);
+	}
+	else if (VertexShader != NULL && FragmentShader != NULL) {
+		m_ShaderProgram.load(VertexShader, FragmentShader);
+		m_ShaderProgram.compile(&compileErrors);
+	}
+	std::cout << compileErrors << std::endl;
 }
 
 bool SkyBox::loadSkybox()
@@ -109,10 +120,10 @@ void SkyBox::createCube()
 		-1.0f, -1.0f,  1.0f,
 		1.0f, -1.0f,  1.0f
 	};
-
+	/*
 	for (int i = 0; i < 36 * 3; i++) {
 		vertices[i] = vertices[i] * 100;
-	}
+	}*/
 
 	glGenVertexArrays(1, &m_VertexArrayObj);
 	glGenBuffers(1, &m_VertexBuffer);
@@ -133,22 +144,23 @@ void SkyBox::apply() const
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_CubeMapTexture);
 }
 
-void SkyBox::draw(Matrix proj, Matrix view)
+void SkyBox::draw(Matrix proj, Matrix view, Vector pos, Camera cam)
 {
+	//view.lookAt(Vector(0, 0, 0), cam.getUp(), pos);
 	//Ignore depth
 	glDepthMask(GL_FALSE);
 	//check_gl_error();
 	m_ShaderProgram.activate();
-	//m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("view"), view);
-	//check_gl_error();
-	//m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("projection"), proj);
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("position"), pos);
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("view"), view);
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("projection"), proj);
 	check_gl_error();
 	glBindVertexArray(m_VertexArrayObj);
 	glActiveTexture(GL_TEXTURE0);
-	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("skybox"), 0);
-	check_gl_error();
+
 	glEnable(GL_TEXTURE_CUBE_MAP);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_CubeMapTexture);
+	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("skybox"), 0);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 

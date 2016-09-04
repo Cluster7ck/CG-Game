@@ -287,5 +287,4 @@ void Camera::apply()
     Vector Target = getTarget(); //m_Target + m_Panning;
     
     gluLookAt(Pos.X, Pos.Y, Pos.Z, Target.X, Target.Y, Target.Z, m_Up.X, m_Up.Y, m_Up.Z);
-    
 }

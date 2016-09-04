@@ -30,12 +30,7 @@ public:
 	float side = 0.0;
 
 	Matrix m_Ball;
-	Matrix m_Rotation = Matrix(0.0f, 0.0f, 0.0f, 0.0f,
-								0.0f, 0.0f, 0.0f, 0.0f,
-								0.0f, 0.0f, 0.0f, 0.0f,
-								0.0f, 0.0f, 0.0f, 0.0f);
 	Matrix m_accRotation;
-	Matrix m_Translation;
 	Matrix m_accTranslation;
 	Ball(float speed, PerlinNoise terrainNoise);
 	~Ball();
@@ -47,7 +42,6 @@ public:
 	void drawBoundingBox();
 	BoundingBox getBoundingBox();
 private:
-	void move(Vector NewPos);
 	float straightForce;
 	float sideForce;
 	float scale;
