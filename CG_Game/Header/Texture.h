@@ -23,11 +23,13 @@ public:
     Texture();
     ~Texture();
     bool LoadFromBMP( const char* Filename );
+	unsigned char* LoadBMP(const char* Filename, unsigned int& width, unsigned int& height);
     void apply() const;
     bool isValid() const;
     const RGBImage* getRGBImage() const;
+	//void setTextureID(GLuint id) const;
 protected:
-    unsigned char* LoadBMP( const char* Filename, unsigned int& width, unsigned int& height );
+    
     RGBImage* createImage( unsigned char* Data, unsigned int width, unsigned int height );
     GLuint m_TextureID;
     RGBImage* m_pImage;

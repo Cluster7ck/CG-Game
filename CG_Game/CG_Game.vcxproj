@@ -180,6 +180,7 @@
     <ClCompile Include="Source\scene.cpp" />
     <ClCompile Include="Source\sceneNode.cpp" />
     <ClCompile Include="Source\shaderprogram.cpp" />
+    <ClCompile Include="Source\SkyBox.cpp" />
     <ClCompile Include="Source\Terrain.cpp" />
     <ClCompile Include="Source\TerrainChunk.cpp" />
     <ClCompile Include="Source\Texture.cpp" />

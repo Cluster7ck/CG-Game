@@ -12,6 +12,7 @@
 #include "../Header/texture.h"
 #include "../Header/Ball.h"
 #include "../Header/Terrain.h"
+#include "../Header/SkyBox.h"
 
 #define CHUNKS_COUNT 25
 #define PICKUP_COUNT 4
@@ -33,6 +34,7 @@ std::vector<Model> pickups;
 Terrain terrain(CHUNKS_COUNT, noise);
 
 Camera g_Camera;
+SkyBox* skybox; ;
 Ball ball(15,noise);
 
 float keyStore[4];
@@ -70,6 +72,7 @@ int main(int argc, char * argv[]) {
     glutMotionFunc(MouseMoveCallback);
 	glutSpecialFunc(SpecialKeyboardCallback);
 
+	skybox = new SkyBox("Shader/skybox_vert.glsl", "Shader/skybox_frag.glsl");
 	for (int i = 0; i < PICKUP_COUNT; i++) {
 		Model tempModel;
 		pickups.push_back(tempModel);
@@ -222,21 +225,19 @@ void DrawScene() {
 
     glLoadIdentity();
     g_Camera.apply();
-    
+	
     GLfloat lpos[4];
     lpos[0]=g_LightPos.X; lpos[1]=g_LightPos.Y; lpos[2]=g_LightPos.Z; lpos[3]=1;
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 	
+	skybox->draw(g_Camera.getProjectionMatrix(), g_Camera.getViewMatrix());
 	ball.update(deltaTime,terrain.getCenterChunk().getObjectsNode());
 	//ball.drawAxis();
 	ball.drawBoundingBox();
 	//Ball Coordiantes to terrain offset.
 	Vector offsets = getOffsets(ball.m_Ball.translation());
 	terrain.setTerrainCenter(offsets.X, offsets.Z);
-
 	terrain.draw();
-	//terrain.drawBoundingBox();
-
 
     glutSwapBuffers();
     glutPostRedisplay();

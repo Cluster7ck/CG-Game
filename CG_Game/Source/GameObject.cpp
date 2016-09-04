@@ -121,52 +121,6 @@ ShaderProgram GameObject::getShaderProgram() {
 }
 
 void GameObject::drawBoundingBox() {
-	/*glDisable(GL_LIGHTING);
-	glBegin(GL_LINES);
-	glColor3f(1.0,1.0,0);		//rgb(60%,20%,60%) = violette
-
-	//Back side
-	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Min.Y, m_BoundingBox.Min.Z);
-	glVertex3f(m_BoundingBox.Max.X, m_BoundingBox.Min.Y, m_BoundingBox.Min.Z);
-
-	glVertex3f(m_BoundingBox.Max.X, m_BoundingBox.Min.Y, m_BoundingBox.Min.Z);
-	glVertex3f(m_BoundingBox.Max.X, m_BoundingBox.Max.Y, m_BoundingBox.Min.Z);
-
-	glVertex3f(m_BoundingBox.Max.X, m_BoundingBox.Max.Y, m_BoundingBox.Min.Z);
-	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Max.Y, m_BoundingBox.Min.Z);
-
-	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Max.Y, m_BoundingBox.Min.Z);
-	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Min.Y, m_BoundingBox.Min.Z);
-
-	//Left side
-	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Min.Y, m_BoundingBox.Min.Z);
-	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Min.Y, m_BoundingBox.Max.Z);
-
-	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Min.Y, m_BoundingBox.Max.Z);
-	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Max.Y, m_BoundingBox.Max.Z);
-
-	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Max.Y, m_BoundingBox.Max.Z);
-	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Max.Y, m_BoundingBox.Min.Z);
-
-	//Right side
-	glVertex3f(m_BoundingBox.Max.X, m_BoundingBox.Min.Y, m_BoundingBox.Min.Z);
-	glVertex3f(m_BoundingBox.Max.X, m_BoundingBox.Min.Y, m_BoundingBox.Max.Z);
-
-	glVertex3f(m_BoundingBox.Max.X, m_BoundingBox.Min.Y, m_BoundingBox.Max.Z);
-	glVertex3f(m_BoundingBox.Max.X, m_BoundingBox.Max.Y, m_BoundingBox.Max.Z);
-
-	glVertex3f(m_BoundingBox.Max.X, m_BoundingBox.Max.Y, m_BoundingBox.Max.Z);
-	glVertex3f(m_BoundingBox.Max.X, m_BoundingBox.Max.Y, m_BoundingBox.Min.Z);
-
-	//Front side
-	glVertex3f(m_BoundingBox.Max.X, m_BoundingBox.Min.Y, m_BoundingBox.Max.Z);
-	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Min.Y, m_BoundingBox.Max.Z);
-
-	glVertex3f(m_BoundingBox.Max.X, m_BoundingBox.Max.Y, m_BoundingBox.Max.Z);
-	glVertex3f(m_BoundingBox.Min.X, m_BoundingBox.Max.Y, m_BoundingBox.Max.Z);
-
-	glEnd();
-	glEnable(GL_LIGHTING);*/
 	m_BoundingBox.draw();
 }
 
