@@ -16,7 +16,7 @@
 #include "../Header//GLError.h"
 
 #define CHUNKS_COUNT 49
-#define PICKUP_COUNT 4
+#define PICKUP_COUNT 5
 
 // window x and y size
 const unsigned int g_WindowWidth=1400;
@@ -28,15 +28,47 @@ const Vector g_LightPos = Vector( 0,64,0);
 float deltaTime = 0;
 int elapsedTimeLastFrame = 0;
 
-char* models[PICKUP_COUNT] = { "Ressourcen/ball.obj","Ressourcen/Baum1.obj","Ressourcen/Baum2.obj","Ressourcen/Baum3.obj" };
+struct ModelToLoad {
+	std::string Filename;
+	float minScale;
+	float maxScale;
+};
+ModelToLoad objects[PICKUP_COUNT] = {
+	{
+		"Ressourcen/Baum1.obj",
+		1.0f,
+		4.0f
+	},
+	{
+		"Ressourcen/Baum2.obj",
+		2.5f,
+		4.0f
+	},
+	{
+		"Ressourcen/Baum3.obj",
+		3.5f,
+		6.0f
+	},
+	{
+		"Ressourcen/Fliegenpilz.obj",
+		0.2f,
+		1.0f
+	},
+	{
+		"Ressourcen/Grashalm.obj",
+		0.4f,
+		0.8f
+	}
+};
+
 //Terrain
 PerlinNoise noise(0.5, 0.042, 40, 1, 666);
-std::vector<Model> pickups;
+std::vector<WorldObject> worldObjects;
 Terrain terrain(CHUNKS_COUNT, noise);
 
 Camera g_Camera;
 SkyBox skybox;
-Ball ball(15,noise);
+Ball ball(18,noise);
 
 float keyStore[4];
 
@@ -75,14 +107,15 @@ int main(int argc, char * argv[]) {
 
 	skybox = SkyBox("Shader/skybox_vert.glsl", "Shader/skybox_frag.glsl");
 	for (int i = 0; i < PICKUP_COUNT; i++) {
-		Model tempModel;
-		pickups.push_back(tempModel);
-		pickups.at(i).load(models[i], true);
-		pickups.at(i).loadShaders("Shader/vertexshader.glsl", "Shader/blinn_phong_no_tex.glsl");
-		pickups.at(i).setUseShader(true);
-		//pickups-> .load(models[i], true);
+		WorldObject tempWorldObj;
+		tempWorldObj.minScale = objects[i].minScale;
+		tempWorldObj.maxScale = objects[i].maxScale;
+		worldObjects.push_back(tempWorldObj);
+		worldObjects.at(i).model.load(objects[i].Filename.c_str(), true);
+		worldObjects.at(i).model.loadShaders("Shader/vertexshader.glsl", "Shader/blinn_phong_no_tex.glsl");
+		worldObjects.at(i).model.setUseShader(true);
 	}
-	terrain.setPickups(&pickups);
+	terrain.setPickups(&worldObjects);
 	terrain.loadShaders("Shader/vertexshader.glsl", "Shader/terrain_fragmentshader.glsl");
 	terrain.initChunks();
 	ball.load("Ressourcen/ball.obj", Vector(0, 0.5, 0));

@@ -18,11 +18,17 @@
 #include "GameObject.h"
 #include "sceneNode.h"
 
-#define CHUNKSIZE 400
+#define CHUNKSIZE 80
 
 struct TerrainVertex {
 	Vector Pos;
 	Vector Normal;
+};
+
+struct WorldObject {
+	Model model;
+	float minScale;
+	float maxScale;
 };
 
 class TerrainChunk:public GameObject{
@@ -30,7 +36,7 @@ public:
 	TerrainChunk();
 	~TerrainChunk();
 	bool create(float Width, float Depth, float HeightMultiplier, float OffsetX, float OffsetY, PerlinNoise pn);
-	bool createObjects(std::vector<Model>* ModelVector, int ObjectCount, float Variance, PerlinNoise Pn);
+	bool createObjects(std::vector<WorldObject>* ObjectVector, int ObjectCount, float Variance, PerlinNoise Pn);
 	void bindBuffers();
 	void draw();
 	SceneNode* getObjectsNode() { return objects; };

@@ -234,7 +234,7 @@ bool TerrainChunk::create(float Width, float Depth, float HeightMultiplier, floa
 	return true;
 }
 
-bool TerrainChunk::createObjects(std::vector<Model>* ModelVector, int ObjectCount, float Variance, PerlinNoise Pn) {
+bool TerrainChunk::createObjects(std::vector<WorldObject>* ObjectVector, int ObjectCount, float Variance, PerlinNoise Pn) {
 	int objCountDeviation = floor(ObjectCount * (1-Variance));
 	srand(Pn.GetHeight(terrainOffsetX,terrainOffsetZ));
 	int floor = ObjectCount - objCountDeviation, ceiling = ObjectCount + objCountDeviation, range = (ceiling - floor);
@@ -248,13 +248,13 @@ bool TerrainChunk::createObjects(std::vector<Model>* ModelVector, int ObjectCoun
 		ss << " ObjNr. " << i << " of TerrainChunk (" << this->terrainOffsetX << " , " << this->terrainOffsetZ << ") ";
 		std::string name = ss.str();
 
-		scale = randomFloat(0.5f, 4.0f);
+		
 		x = randomFloat(m_BoundingBox.Min.X, m_BoundingBox.Max.X);
 		z = randomFloat(m_BoundingBox.Min.Z, m_BoundingBox.Max.Z);
 		//6.28319 radian  = 360 Deg
 		rotation = 0;//randomFloat(0, 6.28319f);
-		modelNr = rand() % ModelVector->size();
-		
+		modelNr = rand() % ObjectVector->size();
+		scale = randomFloat(ObjectVector->at(modelNr).minScale, ObjectVector->at(modelNr).maxScale);
 		
 		SceneNode* objectNode = new SceneNode(	name, 
 												Vector(x, Pn.GetHeight(x,z) ,z),
@@ -262,7 +262,32 @@ bool TerrainChunk::createObjects(std::vector<Model>* ModelVector, int ObjectCoun
 												rotation,
 												Vector(scale,scale,scale), 
 												objects, 
-												&(ModelVector->at(modelNr)));
+												&(ObjectVector->at(modelNr).model));
+
+		//BoundingBox shouldnt hang in air - Ball might get stuck
+		BoundingBox objectBB = objectNode->getTransformedBoundingBox();
+		Vector minZminX(objectBB.Min.X, objectBB.Min.Y, objectBB.Min.Z);
+		Vector minZmaxX(objectBB.Max.X, objectBB.Min.Y, objectBB.Min.Z);
+		Vector maxZminX(objectBB.Min.X, objectBB.Min.Y, objectBB.Max.Z);
+		Vector maxZmaxX(objectBB.Max.X, objectBB.Min.Y, objectBB.Max.Z);
+		float minY = objectBB.Min.Y;
+		if (Pn.GetHeight(minZminX.X, minZminX.Z) < minZminX.Y) {
+			minY = Pn.GetHeight(minZminX.X, minZminX.Z);
+		}
+		else if (Pn.GetHeight(minZmaxX.X, minZmaxX.Z) < minZmaxX.Y) {
+			minY = Pn.GetHeight(minZmaxX.X, minZmaxX.Z);
+		}
+		else if (Pn.GetHeight(maxZminX.X, maxZminX.Z) < maxZminX.Y) {
+			minY = Pn.GetHeight(maxZminX.X, maxZminX.Z);
+		}
+		else if (Pn.GetHeight(maxZmaxX.X, maxZmaxX.Z) < maxZmaxX.Y) {
+			minY = Pn.GetHeight(maxZmaxX.X, maxZmaxX.Z);
+		}
+
+		if (minY != objectBB.Min.Y) {
+			Vector newTranslation(x, minY, z);
+			objectNode->setLocalTransform(newTranslation, Vector(0, 1, 0), 0);
+		}
 		//std::cout << "Node: " << objectNode->getName() << " y: " << objectNode->getLocalTransform().translation().Y << std::endl;
 		objects->addChild(objectNode);
 	}

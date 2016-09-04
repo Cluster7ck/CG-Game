@@ -27,7 +27,7 @@ public:
 
 	void draw();
 	bool collision(const BoundingBox& otherBox);
-
+	float getVolume();
 	Vector Min;
 	Vector Max;
 };

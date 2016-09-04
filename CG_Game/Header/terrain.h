@@ -7,8 +7,8 @@
 #include "TerrainChunk.h"
 #include "utility_len.h"
 
-#define CHUNKSIZE 400
-#define PICKUPS_PER_CHUNK  200
+#define CHUNKSIZE 80
+#define PICKUPS_PER_CHUNK  20
 
 struct TerrainOffset {
 	int offsetX;
@@ -27,14 +27,14 @@ public:
 	void draw();
 	void setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp, float MinHeight, float MaxHeight);
 	void setTerrainCenter(int x, int y);
-	void setPickups(std::vector<Model>* pickups);
+	void setPickups(std::vector<WorldObject>* pickups);
 	TerrainChunk getCenterChunk();
 private:
 	void createChunkThread(TerrainOffset ChunkOffset);
 	int chunkCount;
 	int chunksPerSide;
 	int maxOffset;
-	std::vector<Model>* pickups;
+	std::vector<WorldObject>* pickups;
 	TerrainOffset currentCenter;
 	PerlinNoise terrainNoise;
 	std::map<TerrainOffset, TerrainChunk> terrainMap;

@@ -26,13 +26,6 @@ bool Ball::load(const char* BallModel, const Vector& StartPos) {
 
 	this->straight = 0;
 	this->side = 0;
-	/*g_Model_ball.m_BoundingBox.Min.X += StartPos.X;
-	g_Model_ball.m_BoundingBox.Max.X += StartPos.X;
-	g_Model_ball.m_BoundingBox.Min.Y += StartPos.Y;
-	g_Model_ball.m_BoundingBox.Max.Y += StartPos.Y;
-	g_Model_ball.m_BoundingBox.Min.Z += StartPos.Z;
-	g_Model_ball.m_BoundingBox.Max.Z += StartPos.Z;
-	*/
 	return true;
 }
 
@@ -108,15 +101,15 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 	BoundingBox checkBox = getBoundingBox() * transM;
 	checkBox.draw();
 	SceneNode* collisionNode = chunkObjects->collision(checkBox);
-	Vector nodeScale(1, 1, 1);
-
+	float nodeVolume = FLT_MIN;
+	float ballVolume = this->getBoundingBox().getVolume();
 	bool collision = false;
 	if (collisionNode != NULL) {
 		collision = true;
-		nodeScale = collisionNode->getScaling();
+		nodeVolume = collisionNode->getTransformedBoundingBox().getVolume();
 	}
 
-	if (nodeScale.X > accumulatedScale) {
+	if (nodeVolume > ballVolume) {
 		newPos.X = m_Ball.translation().X - newPos.X;
 		newPos.Y = m_Ball.translation().Y - (newPos.Y);
 		newPos.Z = m_Ball.translation().Z - newPos.Z;
@@ -125,8 +118,8 @@ void Ball::update(float DeltaTime, SceneNode* chunkObjects) {
 		if (collision) {
 			chunkObjects->removeChild(collisionNode);
 			delete collisionNode;
-			scale += 0.1 * nodeScale.X;
-			accumulatedScale *= (1 + 0.1 * nodeScale.X);
+			scale += 0.1 * nodeVolume;
+			accumulatedScale *= (1 + 0.1 * nodeVolume);
 		}
 		m_accTranslation = m_accTranslation * transM;
 

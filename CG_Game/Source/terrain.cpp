@@ -135,7 +135,7 @@ TerrainChunk Terrain::getCenterChunk() {
 	return it->second;
 }
 
-void Terrain::setPickups(std::vector<Model>* pickups) {
+void Terrain::setPickups(std::vector<WorldObject>* pickups) {
 	this->pickups = pickups;
 }
 

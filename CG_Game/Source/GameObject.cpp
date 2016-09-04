@@ -25,6 +25,14 @@ BoundingBox BoundingBox::operator*(const Matrix& M) const {
 	return temp;
 }
 
+float BoundingBox::getVolume() {
+	float z = Max.Z - Min.Z;
+	float x = Max.X - Min.X;
+	float y = Max.Y - Min.Y;
+
+	return x*y*z;
+}
+
 void BoundingBox::draw() {
 	glDisable(GL_LIGHTING);
 	glBegin(GL_LINES);
