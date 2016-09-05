@@ -264,7 +264,8 @@ bool TerrainChunk::createObjects(std::vector<WorldObject>* ObjectVector, int Obj
 												objects, 
 												&(ObjectVector->at(modelNr).model));
 
-		//BoundingBox shouldnt hang in air - Ball might get stuck
+		//Lower BBox so that no edge is above ground
+		//BoundingBox shouldnt hang in air - Ball might get stuck beneath
 		BoundingBox objectBB = objectNode->getTransformedBoundingBox();
 		Vector minZminX(objectBB.Min.X, objectBB.Min.Y, objectBB.Min.Z);
 		Vector minZmaxX(objectBB.Max.X, objectBB.Min.Y, objectBB.Min.Z);
@@ -294,7 +295,7 @@ bool TerrainChunk::createObjects(std::vector<WorldObject>* ObjectVector, int Obj
 
 	return true;
 }
-//OpenGL calls hard to do in thread...
+//OpenGL calls hard to do in thread - Vertex creation in thread OpenGL calls in main
 void TerrainChunk::bindBuffers() {
 	if (!isBound) {
 		glGenBuffers(1, &m_VertexBuffer);

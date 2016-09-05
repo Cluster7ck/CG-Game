@@ -30,13 +30,22 @@
 #include "color.h"
 #include "Material.h"
 #include "GameObject.h"
+#include "GLError.h"
 
-
+struct Vertex {
+	Vertex();
+	Vertex(const Vector& p, const Vector& n, float TexS, float TexT);
+	Vector Position;
+	Vector Normal;
+	float  TexcoordS;
+	float  TexcoordT;
+};
 
 class Model:public GameObject {
 public:
     Model();
     ~Model();
+	Model(const Model& m);
     bool load( const char* Filename, bool FitSize=true);
     void drawLines() const;
 	void draw();
@@ -45,7 +54,7 @@ public:
 protected:
 	void createObject(const char* filename, bool fitSize);
 	void createMaterials(const char* filename);
-	void setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp, float MinHeight, float MaxHeight);
+	void setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp);
 	
 	bool useShader;
 	std::vector<Material> m_Materials;

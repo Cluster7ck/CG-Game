@@ -155,7 +155,6 @@
     <ClInclude Include="Header\Model.h" />
     <ClInclude Include="Header\PerlinNoise.h" />
     <ClInclude Include="Header\rgbimage.h" />
-    <ClInclude Include="Header\scene.h" />
     <ClInclude Include="Header\sceneNode.h" />
     <ClInclude Include="Header\shaderprogram.h" />
     <ClInclude Include="Header\SkyBox.h" />
@@ -177,7 +176,6 @@
     <ClCompile Include="Source\Model.cpp" />
     <ClCompile Include="Source\PerlinNoise.cpp" />
     <ClCompile Include="Source\rgbimage.cpp" />
-    <ClCompile Include="Source\scene.cpp" />
     <ClCompile Include="Source\sceneNode.cpp" />
     <ClCompile Include="Source\shaderprogram.cpp" />
     <ClCompile Include="Source\SkyBox.cpp" />

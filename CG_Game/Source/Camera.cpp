@@ -56,13 +56,9 @@ void Camera::setPosition( const Vector& Pos)
     m_Panning = m_Rotation = m_Zoom = Vector(0,0,0);
 }
 
-void Camera::setPosition(const Vector& Pos, float MinY)
+void Camera::setPosition(const Vector& Pos, float targetScale)
 {
-	Vector pos;
-	pos = Pos;
-	if (pos.Y < MinY)
-		pos.Y = MinY;
-	m_Position = pos;
+	m_Position = Pos;
 	m_Panning = m_Rotation = m_Zoom = Vector(0, 0, 0);
 }
 

@@ -181,3 +181,7 @@ unsigned char* Texture::LoadBMP(const char* Filename, unsigned int& width, unsig
     fclose(filePtr);
     return bitmapImage;
 }
+
+const GLuint Texture::getTexID() const{
+	return m_TextureID;
+}

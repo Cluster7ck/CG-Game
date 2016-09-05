@@ -71,8 +71,6 @@ void Terrain::draw() {
 	TerrainOffset tempOffset;
 	TerrainChunk tempChunk;
 
-	m_ShaderProgram.activate();
-	setShaderUniforms(Vector(0.0f, 64.0f, 0.0f), Color(1.0f, 1.0f, 1.0f), Color(1.0f, 1.0f, 1.0f), Color(0.1f, 0.1f, 0.1f), Color(0.2f, 0.2f, 0.2f), 1, m_BoundingBox.Min.Y, m_BoundingBox.Max.Y);
 
 	int sideSize = chunksPerSide;
 	for (int y = 0; y < chunksPerSide; y++) {
@@ -93,16 +91,11 @@ void Terrain::draw() {
 				}
 			}
 			else{
-				/*static int bla = 0;
-				bla++;
-				std::cout<< "Num : "<< bla << " <<<<< Offx " << tempOffset.offsetX << " OffY " << tempOffset.offsetY << std::endl;
-				*/
 				std::thread thread1(&Terrain::createChunkThread, this,tempOffset);
 				thread1.detach();
 			}
 		}
 	}
-	m_ShaderProgram.deactivate();
 	
 }
 

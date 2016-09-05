@@ -2,6 +2,7 @@
 #define SKYBOX_H
 /*
 With tutorial http://learnopengl.com/#!Advanced-OpenGL/Cubemaps
+Doesn't work like intended...
 */
 #include <windows.h>
 #include <GL/glew.h>
@@ -23,7 +24,7 @@ public:
 	bool loadSkybox();
 	void createCube();
 	void apply() const;
-	void draw(Matrix proj, Matrix view, Vector pos, Camera cam);
+	void draw(Matrix proj, Matrix view, Vector pos);
 	Matrix m_Skybox;
 private:
 	std::vector<std::string> TextureFilenames;

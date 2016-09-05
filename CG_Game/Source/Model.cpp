@@ -1,11 +1,3 @@
-//
-//  Model.cpp
-//  RealtimeRending
-//
-//  Created by Philipp Lensing on 23.10.14.
-//  Copyright (c) 2014 Philipp Lensing. All rights reserved.
-//
-
 #include <Windows.h>
 #include <GL/glew.h>
 #include <GL/GLUT.h>
@@ -14,15 +6,45 @@
 #include "../Header/Model.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
+#define GL_DEBUG
 void setMaterial(Material m);
 
-Model::Model() : m_pVertices(NULL), m_MaterialCount(0), m_VertexCount(0) {
+
+Vertex::Vertex() {
+}
+
+Vertex::Vertex(const Vector& p, const Vector& n, float TexS, float TexT) {
+	Position = p;
+	Normal = n;
+	TexcoordS = TexS;
+	TexcoordT = TexT;
+}
+
+Model::Model() : m_pVertices(NULL), m_MaterialCount(0), m_VertexCount(0), indicesCount(0){
 
 }
 
 Model::~Model() {
-    //if( m_pVertices)
-     //   delete [] m_pVertices;
+    if( m_pVertices)
+       delete [] m_pVertices;
+}
+
+Model::Model(const Model& m) {
+	this->indicesCount = m.indicesCount;
+	this->useShader = m.useShader;
+	this->m_MaterialCount = m.m_MaterialCount;
+	this->m_VertexCount = m.m_VertexCount;
+	this->m_BoundingBox = m.m_BoundingBox;
+	this->m_VertexBuffer = m.m_VertexBuffer;
+	this->m_IndexBuffer = m.m_IndexBuffer;
+	this->m_mtlMap = m.m_mtlMap;
+	this->m_Materials = m.m_Materials;
+
+	this->m_pVertices = new Vertex[m_VertexCount];
+	memcpy(this->m_pVertices, m.m_pVertices, sizeof(Vertex) * m_VertexCount);
+
+	this->Indices = new unsigned int[indicesCount];
+	memcpy(this->Indices, m.Indices, sizeof(unsigned int) * indicesCount);
 }
 
 bool Model::load(const char* Filename, bool FitSize) {
@@ -199,7 +221,7 @@ void Model::createObject(const char* Filename, bool FitSize) {
 	m_BoundingBox.Max.X = m_BoundingBox.Min.X = v[0].X;
 	m_BoundingBox.Max.Y = m_BoundingBox.Min.Y = v[0].Y;
 	m_BoundingBox.Max.Z = m_BoundingBox.Min.Z = v[0].Z;
-
+	
 	for (unsigned int i = 0; i < v.size(); i++) {
 		Vector vertex = v[i];
 
@@ -260,17 +282,22 @@ void Model::createObject(const char* Filename, bool FitSize) {
 
 	// Eckpunkte und Materialien zusammenstellen
 	unsigned int faceCount = (unsigned int)f.size();
-	m_pVertices = new Vertex[v.size()];
-	m_VertexCount = v.size();
+
 
 	indicesCount = faceCount * 3;
 	Indices = new unsigned int[indicesCount];
 	unsigned int vertexIndex = 0;
-	
+	std::vector<Vertex> vertexVector;
+	vertexVector.reserve(m_VertexCount);
+
 	for (unsigned int i = 0; i < v.size(); i++) {
-		m_pVertices[i].Position = v[i];
+		Vertex vert;
+		vert.Position = v[i];
+		vert.TexcoordS = -1;
+		vert.TexcoordT = -1;
+		vertexVector.push_back(vert);
 	}
-	
+
 	for (unsigned int i = 0; i < faceCount; i++) {
 		unsigned int PosIdx0 = f[i].pidx[0] - 1;
 		unsigned int PosIdx1 = f[i].pidx[1] - 1;
@@ -280,21 +307,63 @@ void Model::createObject(const char* Filename, bool FitSize) {
 		unsigned int TexIdx1 = f[i].tidx[1] - 1;
 		unsigned int TexIdx2 = f[i].tidx[2] - 1;
 
+
+		//Is vertex new
+		if (vertexVector.at(PosIdx0).TexcoordS != -1) {
+			if (vertexVector.at(PosIdx0).TexcoordS != vt[TexIdx0].s || vertexVector.at(PosIdx0).TexcoordT != vt[TexIdx0].t) {
+				//New Vertex
+				Vertex vert;
+				vert.Position = vertexVector.at(PosIdx0).Position;
+				PosIdx0 = vertexVector.size();
+				vertexVector.push_back(vert);
+				vertexVector.at(PosIdx0).TexcoordS = vt[TexIdx0].s;
+				vertexVector.at(PosIdx0).TexcoordT = vt[TexIdx0].t;
+			}
+		}
+		else {
+			vertexVector.at(PosIdx0).TexcoordS = vt[TexIdx0].s;
+			vertexVector.at(PosIdx0).TexcoordT = vt[TexIdx0].t;
+		}
+
+		if (vertexVector.at(PosIdx1).TexcoordS != -1) {
+			if (vertexVector.at(PosIdx1).TexcoordS != vt[TexIdx1].s || vertexVector.at(PosIdx1).TexcoordT != vt[TexIdx1].t) {
+				//New Vertex
+				Vertex vert;
+				vert.Position = vertexVector.at(PosIdx1).Position;
+				PosIdx1 = vertexVector.size();
+				vertexVector.push_back(vert);
+				vertexVector.at(PosIdx1).TexcoordS = vt[TexIdx1].s;
+				vertexVector.at(PosIdx1).TexcoordT = vt[TexIdx1].t;
+			}
+		}
+		else {
+			vertexVector.at(PosIdx1).TexcoordS = vt[TexIdx1].s;
+			vertexVector.at(PosIdx1).TexcoordT = vt[TexIdx1].t;
+		}
+
+		if (vertexVector.at(PosIdx2).TexcoordS != -1) {
+			if (vertexVector.at(PosIdx2).TexcoordS != vt[TexIdx2].s || vertexVector.at(PosIdx2).TexcoordT != vt[TexIdx2].t) {
+				//New Vertex
+				Vertex vert;
+				vert.Position = vertexVector.at(PosIdx2).Position;
+				PosIdx2 = vertexVector.size();
+				vertexVector.push_back(vert);
+				vertexVector.at(PosIdx2).TexcoordS = vt[TexIdx2].s;
+				vertexVector.at(PosIdx2).TexcoordT = vt[TexIdx2].t;
+			}
+		}
+		else {
+			vertexVector.at(PosIdx2).TexcoordS = vt[TexIdx2].s;
+			vertexVector.at(PosIdx2).TexcoordT = vt[TexIdx2].t;
+		}
+
 		Indices[vertexIndex] = PosIdx0;
 		Indices[vertexIndex + 1] = PosIdx1;
 		Indices[vertexIndex + 2] = PosIdx2;
 
-		m_pVertices[PosIdx0].TexcoordS = vt[TexIdx0].s;
-		m_pVertices[PosIdx1].TexcoordS = vt[TexIdx1].s;
-		m_pVertices[PosIdx2].TexcoordS = vt[TexIdx2].s;
-
-		m_pVertices[PosIdx0].TexcoordT = vt[TexIdx0].t;
-		m_pVertices[PosIdx1].TexcoordT = vt[TexIdx1].t;
-		m_pVertices[PosIdx2].TexcoordT = vt[TexIdx2].t;
-
-		Vector a = v[PosIdx0];
-		Vector b = v[PosIdx1];
-		Vector c = v[PosIdx2];
+		Vector a = vertexVector.at(PosIdx0).Position;
+		Vector b = vertexVector.at(PosIdx1).Position;
+		Vector c = vertexVector.at(PosIdx2).Position;
 		Vector normal = (b - a).cross(c - a);
 		if (normal.length() == 0) {
 			//std::cout << "fehlerfall" <<std::endl;
@@ -303,10 +372,17 @@ void Model::createObject(const char* Filename, bool FitSize) {
 		else {
 			normal.normalize();
 		}
-		m_pVertices[PosIdx0].Normal = m_pVertices[PosIdx1].Normal = m_pVertices[PosIdx2].Normal = normal;
+		vertexVector.at(PosIdx0).Normal = vertexVector.at(PosIdx1).Normal = vertexVector.at(PosIdx2).Normal = normal;
 
 		vertexIndex += 3;
 	}
+	m_pVertices = new Vertex[vertexVector.size()];
+	m_VertexCount = vertexVector.size();
+	//vector to array
+	for (int i = 0; i < vertexVector.size(); i++) {
+		m_pVertices[i] = vertexVector.at(i);
+	}
+
 	fileStream.close();
 
 	glGenBuffers(1, &m_VertexBuffer);
@@ -452,8 +528,11 @@ void Model::draw(){
 
 void Model::drawBuffer(){
 	m_ShaderProgram.activate();
-	setShaderUniforms(Vector(0, 64, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.1, 0.1, 0.1), Color(0.2, 0.2, 0.2), 1, m_BoundingBox.Min.Y, m_BoundingBox.Max.Y);
-
+	if (m_Materials.size() != 0) {
+		//mat = m_Materials.at(0);
+		setShaderUniforms(Vector(0, 64, 0), Color(1, 1, 1), m_Materials.at(0).getDiffuseColor(), m_Materials.at(0).getSpecularColor(), m_Materials.at(0).getAmbientColor(), m_Materials.at(0).getSpecularExponent());
+		m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("DiffuseTexture"), 0);
+	}
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
 
@@ -463,17 +542,27 @@ void Model::drawBuffer(){
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
-
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	// setup position & normal pointers
 	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(0));
 	glNormalPointer(GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(12));
-
+	glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(24));
 
 	#ifdef GL_DEBUG
 		check_gl_error();
 	#endif // DEBUG
+	if (m_Materials.size() != 0) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_Materials.at(0).getTexture().getTexID());
+	}
+	
 
 	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+
+	if (m_Materials.size() != 0) {
+		glDisable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
@@ -502,7 +591,7 @@ void setMaterial(Material mtl) {
 	mtl.getTexture().apply();
 }
 
-void Model::setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp, float MinHeight, float MaxHeight) {
+void Model::setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor, Color SpecColor, Color AmbientColor, float SpecExp) {
 	GLint paraID = m_ShaderProgram.getParameterID("LightPos");
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("LightPos"), LightPos);
 	paraID = m_ShaderProgram.getParameterID("DiffColor");
@@ -513,8 +602,4 @@ void Model::setShaderUniforms(Vector LightPos, Color LightColor, Color DiffColor
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("AmbientColor"), AmbientColor);
 	paraID = m_ShaderProgram.getParameterID("SpecExp");
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("SpecExp"), SpecExp);
-	//paraID = m_ShaderProgram.getParameterID("MaxHeight");
-	//m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("MaxHeight"), MaxHeight);
-	//paraID = m_ShaderProgram.getParameterID("MinHeight");
-	//m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("MinHeight"), MinHeight);
 }

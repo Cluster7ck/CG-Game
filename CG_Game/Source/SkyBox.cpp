@@ -12,11 +12,11 @@ SkyBox::SkyBox(const char* VertexShader, const char* FragmentShader)
 	m_VertexShader = VertexShader;
 	m_FragmentShader = FragmentShader;
 
-	TextureFilenames.push_back("Ressourcen/right.bmp");
-	TextureFilenames.push_back("Ressourcen/left.bmp");
-	TextureFilenames.push_back("Ressourcen/top.bmp");
-	TextureFilenames.push_back("Ressourcen/bottom.bmp");
-	TextureFilenames.push_back("Ressourcen/back.bmp");
+	TextureFilenames.push_back("Ressourcen/sky2.bmp");
+	TextureFilenames.push_back("Ressourcen/sky2.bmp");
+	TextureFilenames.push_back("Ressourcen/sky2.bmp");
+	TextureFilenames.push_back("Ressourcen/sky2.bmp");
+	TextureFilenames.push_back("Ressourcen/sky2.bmp");
 	TextureFilenames.push_back("Ressourcen/sky2.bmp");
 
 	createCube();
@@ -53,7 +53,7 @@ bool SkyBox::loadSkybox()
 
 		if (image == NULL) {
 			std::cout << "Image "<< i <<" could not be loaded" << std::endl;
-			exit(5);
+			exit(-1);
 		}
 
 		glTexImage2D(
@@ -120,10 +120,6 @@ void SkyBox::createCube()
 		-1.0f, -1.0f,  1.0f,
 		1.0f, -1.0f,  1.0f
 	};
-	/*
-	for (int i = 0; i < 36 * 3; i++) {
-		vertices[i] = vertices[i] * 100;
-	}*/
 
 	glGenVertexArrays(1, &m_VertexArrayObj);
 	glGenBuffers(1, &m_VertexBuffer);
@@ -144,12 +140,10 @@ void SkyBox::apply() const
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_CubeMapTexture);
 }
 
-void SkyBox::draw(Matrix proj, Matrix view, Vector pos, Camera cam)
+void SkyBox::draw(Matrix proj, Matrix view, Vector pos)
 {
-	//view.lookAt(Vector(0, 0, 0), cam.getUp(), pos);
 	//Ignore depth
 	glDepthMask(GL_FALSE);
-	//check_gl_error();
 	m_ShaderProgram.activate();
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("position"), pos);
 	m_ShaderProgram.setParameter(m_ShaderProgram.getParameterID("view"), view);

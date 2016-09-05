@@ -31,7 +31,7 @@ public:
     Vector getUp();
     
     void setPosition( const Vector& Pos);
-	void setPosition(const Vector& Pos, float MinY);
+	void setPosition(const Vector& Pos, float targetScale);
     void setTarget( const Vector& Target);
     void setUp( const Vector& Up);
 

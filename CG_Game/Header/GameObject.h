@@ -10,14 +10,7 @@
 #include "color.h"
 #include "shaderprogram.h"
 
-struct Vertex {
-	Vertex();
-	Vertex(const Vector& p, const Vector& n, float TexS, float TexT);
-	Vector Position;
-	Vector Normal;
-	float  TexcoordS;
-	float  TexcoordT;
-};
+
 
 class BoundingBox {
 public:

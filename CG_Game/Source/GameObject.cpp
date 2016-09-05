@@ -2,15 +2,6 @@
 
 
 
-Vertex::Vertex() {
-}
-
-Vertex::Vertex(const Vector& p, const Vector& n, float TexS, float TexT) {
-	Position = p;
-	Normal = n;
-	TexcoordS = TexS;
-	TexcoordT = TexT;
-}
 
 BoundingBox::BoundingBox() {
 }

@@ -42,11 +42,11 @@ public:
 	void drawBoundingBox();
 	BoundingBox getBoundingBox();
 private:
+	PerlinNoise terrainNoise;
 	float straightForce;
 	float sideForce;
 	float scale;
 	float accumulatedScale;
-	PerlinNoise terrainNoise;
 	float speed;
 	int rotationX;
 	int rotationZ;

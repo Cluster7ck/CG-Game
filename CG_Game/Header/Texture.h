@@ -27,7 +27,7 @@ public:
     void apply() const;
     bool isValid() const;
     const RGBImage* getRGBImage() const;
-	//void setTextureID(GLuint id) const;
+	const GLuint getTexID() const;
 protected:
     
     RGBImage* createImage( unsigned char* Data, unsigned int width, unsigned int height );
